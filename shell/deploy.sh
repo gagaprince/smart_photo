@@ -1,0 +1,1 @@
+nohup npm run start:prod & 
