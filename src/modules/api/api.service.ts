@@ -18,8 +18,9 @@ export class ApiService {
   }
 
   async getAllCateData(): Promise<ICateData[]> {
-    const cates = await this.db.selectAllCate();
-    console.log(cates);
+    // const cates = await this.db.selectAllCate();
+    // console.log(cates);
+    const cates = ['清纯美女', '古装美女', '性感美女', '香车美人'];
     const cateDatas: ICateData[] = [];
     for (let i = 0; i < cates.length; i++) {
       const cate = cates[i];
@@ -39,6 +40,12 @@ export class ApiService {
       return this.db.selectByTitle(photo.title);
     }
     return null;
+  }
+
+  public async getCateDataPage(cate: string, pno: number) {
+    const psize = 20;
+    const offset = pno * psize;
+    return this.db.selectCateDataPage(cate, offset, psize);
   }
 
   private shuffleSliceArr(arr: any[], num: number) {

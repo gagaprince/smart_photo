@@ -45,13 +45,21 @@ export class DbService {
   }
 
   public async selectCateData(cate: string): Promise<IPhotoDetail[]> {
+    return this.selectCateDataPage(cate, 0, 100);
+  }
+
+  public async selectCateDataPage(
+    cate: string,
+    offset: number,
+    rows: number,
+  ): Promise<IPhotoDetail[]> {
     return this.mysql
       .table('photo_detail')
       .field('id, title,url,bigcate,rank')
       .where({ bigcate: cate })
       .group('title')
       .order('rank desc')
-      .limit(100)
+      .limit(offset, rows)
       .select();
   }
 

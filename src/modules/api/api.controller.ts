@@ -17,7 +17,10 @@ export class ApiController {
   }
 
   @Get('/getCateDataPage')
-  async getCateDataPage() {}
+  async getCateDataPage(@Query() query: any) {
+    const { cate, pno = 0 } = query;
+    return this.api.getCateDataPage(cate, pno);
+  }
 
   @Get('/getDetail')
   async getDetail(@Query() query: any) {
