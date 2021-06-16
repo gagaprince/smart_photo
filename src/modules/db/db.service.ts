@@ -49,7 +49,20 @@ export class DbService {
   }
 
   public async selectHotDaliy(): Promise<IPhotoDetail[]> {
-    return this.selectCateData('清纯美女');
+    return this.selectHotDataPage(0, 20);
+  }
+
+  public async selectHotDataPage(
+    offset: number,
+    rows: number,
+  ): Promise<IPhotoDetail[]> {
+    return this.mysql
+      .table('photo_detail')
+      .field('id, title,url,bigcate,rank')
+      .group('title')
+      .order('id desc')
+      .limit(offset, rows)
+      .select();
   }
 
   public async selectCateData(cate: string): Promise<IPhotoDetail[]> {
