@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DbService } from '../db/db.service';
-import { beginAllSpider } from './tpzj/spiderTPZJ';
+import { beginAllSpider, beginDaliySpider } from './tpzj/spiderTPZJ';
 
 export interface ISpiderResult {
   isSpider: boolean;
@@ -20,6 +20,16 @@ export class SpiderphotoService {
 
   public excuteSpider() {
     beginAllSpider(this.db).then(() => {
+      this.isSpider = false;
+    });
+    this.isSpider = true;
+  }
+
+  /**
+   * 每日更新
+   */
+  public startDaliy() {
+    beginDaliySpider(this.db).then(() => {
       this.isSpider = false;
     });
     this.isSpider = true;

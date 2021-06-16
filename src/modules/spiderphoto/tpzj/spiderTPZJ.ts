@@ -18,6 +18,12 @@ const parseIndex = async (url: string) => {
 const parsePicPage = async (url: string, type: string, name: string) => {
   const photoDetailPageAnylyzer = new PhotoDetailPageAnylyzer();
   let nowUrl = url;
+  const photos = await dbs.selectPhotosByTitle(name);
+  if (photos && photos.length > 0) {
+    console.log(`${name} 已存在 跳过爬取`);
+    return; //如果库中已存在这个title直接跳过
+  }
+  console.log(`${name} 未入库 现在开始入库`);
   while (true) {
     const mySpider = new Spider(photoDetailPageAnylyzer);
     console.log(`单签采集详情页:${nowUrl}`);
@@ -82,5 +88,29 @@ export const beginAllSpider = async (dbService: DbService) => {
     const { url, type } = indexUrlList[i];
     console.log(url, type);
     parseOneType(url, type);
+  }
+};
+
+const parseOneTypeDaliy = async (url: string, type: string) => {
+  const photoOneTypeAnylyzer = new PhotoOneTypeAnylyzer();
+  const mySpider = new Spider(photoOneTypeAnylyzer);
+  const { typeIndex } = await mySpider.get(url);
+  for (let i = 1; i <= 2; i++) {
+    //只采两页
+    const pageUrl = `${url}list_${typeIndex}_${i}.html`;
+    console.log(pageUrl);
+    await parseOnePage(pageUrl, type);
+  }
+};
+
+export const beginDaliySpider = async (dbService: DbService) => {
+  dbs = dbService;
+  const indexUrlList = await parseIndex(
+    'https://www.tupianzj.com/meinv/xiezhen/',
+  );
+  for (let i = 0; i < indexUrlList.length; i++) {
+    const { url, type } = indexUrlList[i];
+    console.log(url, type);
+    parseOneTypeDaliy(url, type);
   }
 };

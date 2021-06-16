@@ -36,6 +36,14 @@ export class DbService {
       });
   }
 
+  async selectPhotosByTitle(title: string): Promise<IPhotoDetail[]> {
+    return this.mysql
+      .table('photo_detail')
+      .field('title')
+      .where({ title: title })
+      .select();
+  }
+
   public select() {
     console.log('select');
   }
@@ -45,7 +53,7 @@ export class DbService {
   }
 
   public async selectCateData(cate: string): Promise<IPhotoDetail[]> {
-    return this.selectCateDataPage(cate, 0, 100);
+    return this.selectCateDataPage(cate, 0, 20);
   }
 
   public async selectCateDataPage(
@@ -58,7 +66,7 @@ export class DbService {
       .field('id, title,url,bigcate,rank')
       .where({ bigcate: cate })
       .group('title')
-      .order('rank desc')
+      .order('id desc')
       .limit(offset, rows)
       .select();
   }

@@ -1,0 +1,1 @@
+curl http://localhost:3000/smart-photo/spiderphoto/startDaily

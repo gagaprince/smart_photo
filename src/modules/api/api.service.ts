@@ -12,22 +12,23 @@ export class ApiService {
   async getHotDaliy() {
     const photos = await this.db.selectHotDaliy();
     if (photos && photos.length >= 8) {
-      return this.shuffleSliceArr(photos, 8);
+      // return this.shuffleSliceArr(photos, 8);
+      return photos.slice(0, 8);
     }
     return [];
   }
 
   async getAllCateData(): Promise<ICateData[]> {
-    // const cates = await this.db.selectAllCate();
+    const cates = await this.db.selectAllCate();
     // console.log(cates);
-    const cates = ['清纯美女', '古装美女', '性感美女', '香车美人'];
+    // const cates = ['清纯美女', '古装美女', '性感美女', '香车美人',''];
     const cateDatas: ICateData[] = [];
     for (let i = 0; i < cates.length; i++) {
       const cate = cates[i];
       const data = await this.db.selectCateData(cate);
       const cateData: ICateData = {
         cate,
-        infos: this.shuffleSliceArr(data, 6),
+        infos: data.slice(0, 6),
       };
       cateDatas.push(cateData);
     }
