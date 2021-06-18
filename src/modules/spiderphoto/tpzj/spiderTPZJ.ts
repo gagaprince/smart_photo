@@ -79,11 +79,13 @@ const parseOneType = async (url: string, type: string) => {
   }
 };
 
-export const beginAllSpider = async (dbService: DbService) => {
+export const beginAllSpider = async (dbService: DbService, url: string) => {
   dbs = dbService;
-  const indexUrlList = await parseIndex(
-    'https://www.tupianzj.com/meinv/xiezhen/',
-  );
+  // const indexUrlList = await parseIndex(
+  //   // 'https://www.tupianzj.com/meinv/xiezhen/',
+  //   'https://www.tupianzj.com/sheying/hunsha/',
+  // );
+  const indexUrlList = await parseIndex(url);
   for (let i = 0; i < indexUrlList.length; i++) {
     const { url, type } = indexUrlList[i];
     console.log(url, type);

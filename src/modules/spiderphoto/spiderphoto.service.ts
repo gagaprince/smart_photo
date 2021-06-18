@@ -19,7 +19,12 @@ export class SpiderphotoService {
   }
 
   public excuteSpider() {
-    beginAllSpider(this.db).then(() => {
+    beginAllSpider(this.db, 'https://www.tupianzj.com/sheying/ren/');
+    beginAllSpider(this.db, 'https://www.tupianzj.com/meinv/xiezhen/');
+    beginAllSpider(
+      this.db,
+      'https://www.tupianzj.com/chuangyi/shinasheji/',
+    ).then(() => {
       this.isSpider = false;
     });
     this.isSpider = true;
