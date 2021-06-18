@@ -16,19 +16,19 @@ export class DbService {
   mysql: any;
 
   constructor() {
-    this.mysql = Mysql.createConnection({
-      host: '127.0.0.1',
-      user: 'root',
-      password: 'root',
-      database: 'smart_photo',
-    });
-
     // this.mysql = Mysql.createConnection({
-    //   host: 'gagalulu.wang',
+    //   host: '127.0.0.1',
     //   user: 'root',
-    //   password: 'ilovelxh123',
+    //   password: 'root',
     //   database: 'smart_photo',
     // });
+
+    this.mysql = Mysql.createConnection({
+      host: 'gagalulu.wang',
+      user: 'root',
+      password: 'ilovelxh123',
+      database: 'smart_photo',
+    });
   }
 
   async savePhoto(photo: IPhotoDetail) {
