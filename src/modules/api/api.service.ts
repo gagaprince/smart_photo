@@ -25,8 +25,8 @@ export class ApiService {
   async getAllCateData(version: string): Promise<ICateData[]> {
     // const cates = await this.db.selectAllCate();
     // console.log(cates);
-    // const cates = ['清纯美女', '古装美女', '性感美女', '香车美人',''];
-    const cates = ['生态摄影', '创意家居', '花卉图片', '创意广告'];
+    const cates = ['清纯美女', '古装美女', '性感美女', '香车美人', '丝袜美女'];
+    // const cates = ['生态摄影', '创意家居', '花卉图片', '创意广告'];
     const cateDatas: ICateData[] = [];
     for (let i = 0; i < cates.length; i++) {
       const cate = cates[i];
