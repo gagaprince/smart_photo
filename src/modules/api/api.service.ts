@@ -18,9 +18,8 @@ export class ApiService {
     if (version == '1') {
       return this.proxyUrl(photos, '150x150,sc/');
     } else {
-      photos;
+      return photos;
     }
-    return [];
   }
 
   async getAllCateData(version: string): Promise<ICateData[]> {
