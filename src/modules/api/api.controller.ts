@@ -6,25 +6,27 @@ import { ApiService } from './api.service';
 export class ApiController {
   constructor(private readonly api: ApiService) {}
   @Get('/getHotDaliy')
-  async getHotDaliy() {
-    const photos = await this.api.getHotDaliy();
+  async getHotDaliy(@Query() query: any) {
+    const { version = '0' } = query;
+    const photos = await this.api.getHotDaliy(version);
     return photos;
   }
 
   @Get('/getAllCateData')
-  async getAllCateData() {
-    return this.api.getAllCateData();
+  async getAllCateData(@Query() query: any) {
+    const { version = '0' } = query;
+    return this.api.getAllCateData(version);
   }
 
   @Get('/getCateDataPage')
   async getCateDataPage(@Query() query: any) {
-    const { cate, pno = 0 } = query;
-    return this.api.getCateDataPage(cate, pno);
+    const { cate, pno = 0, version = '0' } = query;
+    return this.api.getCateDataPage(cate, pno, version);
   }
 
   @Get('/getDetail')
   async getDetail(@Query() query: any) {
-    const { id } = query;
-    return this.api.getDetail(id);
+    const { id, version = '0' } = query;
+    return this.api.getDetail(id, version);
   }
 }
