@@ -66,6 +66,7 @@ export class DbService {
     return this.mysql
       .table('photo_detail')
       .field('id, title,url,bigcate,rank')
+      .where({ bigcate: '风景摄影图片' })
       .group('title')
       .order('id desc')
       .limit(offset, rows)
