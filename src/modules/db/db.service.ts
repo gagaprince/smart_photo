@@ -24,7 +24,7 @@ export class DbService {
     // });
 
     this.mysql = Mysql.createConnection({
-      host: 'gagalulu.wang',
+      host: 'localhost',
       user: 'root',
       password: 'ilovelxh123',
       database: 'smart_photo',
