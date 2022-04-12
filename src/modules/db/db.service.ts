@@ -22,11 +22,13 @@ export class DbService {
     //   password: 'root',
     //   database: 'smart_photo',
     // });
+    const { MYSQL_USERNAME, MYSQL_PASSWORD, MYSQL_ADDRESS = "" } = process.env;
+    const [host, port] = MYSQL_ADDRESS.split(":");
 
     this.mysql = Mysql.createConnection({
-      host: 'localhost',
-      user: 'root',
-      password: 'ilovelxh123',
+      host,
+      user: MYSQL_USERNAME,
+      password: MYSQL_PASSWORD,
       database: 'smart_photo',
     });
   }
