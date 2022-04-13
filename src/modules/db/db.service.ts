@@ -69,10 +69,10 @@ export class DbService {
       this.mysql
         .table('photo_detail')
         .field('id, title,url,bigcate,rank')
-        .where({ bigcate: '风景摄影图片' })
-        // .where({
-        //   bigcate: ['IN', '清纯美女,古装美女,性感美女,香车美人,丝袜美女'],
-        // })
+        //   .where({ bigcate: '风景摄影图片' })
+        .where({
+          bigcate: ['IN', '清纯美女,古装美女,性感美女,香车美人,丝袜美女'],
+        })
         .group('title')
         .order('id desc')
         .limit(offset, rows)
