@@ -75,7 +75,10 @@ export class ApiService {
 
   private proxyUrl(photos: IPhotoDetail[], fit: string) {
     return photos.map(photo => {
-      photo.url = `https://ip.webmasterapi.com/api/imageproxy/${fit}${photo.url}`;
+      // photo.url = `https://ip.webmasterapi.com/api/imageproxy/${fit}${photo.url}`;
+      photo.url = `https://images.weserv.nl/?url=${encodeURIComponent(
+        photo.url,
+      )}`;
       return photo;
     });
   }
