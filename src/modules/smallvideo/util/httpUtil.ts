@@ -107,7 +107,10 @@ async function _requestOneStep(options): Promise<any> {
 async function _request(options): Promise<any> {
   return new Promise((res, rej) => {
     request(options, (err, response, body) => {
-      if (err) rej(err);
+      if (err) {
+        rej(err);
+        return;
+      }
       if (response.statusCode == 302) {
         const cookie = response.headers['set-cookie'];
         if (cookie) {
