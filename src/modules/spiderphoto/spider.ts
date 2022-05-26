@@ -22,7 +22,6 @@ export default class Spider {
       request = request.set(headers);
     }
     const result = await request.catch((e: any) => {
-      console.log(e.status);
       return new Promise(res => {
         setTimeout(() => {
           res(this.get(url, headers));
@@ -41,7 +40,6 @@ export default class Spider {
       .set(headers)
       .send(data)
       .catch(e => {
-        console.log(e.status);
         return null;
       });
     return (

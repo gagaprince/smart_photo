@@ -12,8 +12,11 @@ export class SmallvideoController {
 
   @HttpCode(200)
   @Post('/all')
-  async all(@Body('content') content: string): Promise<any> {
-    const ret = await this.smallvideoService.parseWithContent(content);
+  async all(
+    @Body('content') content: string,
+    @Body('cookie') cookie: string = '',
+  ): Promise<any> {
+    const ret = await this.smallvideoService.parseWithContent(content, cookie);
     return ret;
   }
 
@@ -25,30 +28,23 @@ export class SmallvideoController {
     @Body('psize') size: number,
     @Body('max') max: string,
     @Body('refer') refer: string,
+    @Body('cookie') cookie: string,
   ): Promise<any> {
-    if (type === 'douyin') {
-      const ret = await this.smallvideoService.getDouYinProductList(
-        user,
-        size,
-        max,
-      );
-      return ret;
-    } else if (type === 'kuaishou') {
-      const ret = await this.smallvideoService.getKuaishouProductList(
-        user,
-        size,
-        max,
-        refer,
-      );
-      return ret;
-    }
-    return '';
+    const ret = await this.smallvideoService.getProductList(
+      user,
+      size,
+      max,
+      type,
+      refer,
+      cookie,
+    );
+    return ret;
   }
 
   @HttpCode(200)
   @Post('/douyin')
   async douyin(@Body('url') url: string): Promise<any> {
-    const ret = await this.smallvideoService.parseDouyinVideoInfoByUrl(url);
+    const ret = await this.smallvideoService.parseVideoInfoByUrl('douyin', url);
     return ret;
   }
 
@@ -58,17 +54,21 @@ export class SmallvideoController {
     @Body('psize') size: number,
     @Body('max') max: string,
   ): Promise<any> {
-    const ret = await this.smallvideoService.getDouYinProductList(
+    const ret = await this.smallvideoService.getProductList(
       user,
       size,
       max,
+      'douyin',
     );
     return ret;
   }
 
   @Post('/kuaishou')
   async kuaishou(@Body('url') url: string): Promise<any> {
-    const ret = await this.smallvideoService.parseKuaiShouVideoInfoByUrl(url);
+    const ret = await this.smallvideoService.parseVideoInfoByUrl(
+      'kuaishou',
+      url,
+    );
     return ret;
   }
 

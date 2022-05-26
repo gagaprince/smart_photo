@@ -34,7 +34,8 @@
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.4",
     "superagent": "^6.1.0",
-    "superagent-charset": "^1.2.0"
+    "superagent-charset": "^1.2.0",
+    "url-parse": "^1.5.10"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.0.0",

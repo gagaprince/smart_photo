@@ -1,114 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { config4DY, config4KS, config4All } from './config';
-import cheerio from 'cheerio';
-import superagent from 'superagent';
-import { generateSignature } from './util/sign';
-import { sign4ks } from './util/sig3';
-import { getMd5, changeMd5 } from './util/mp4Util';
-let request = require('request');
-const charset = require('superagent-charset');
-const superagentC = charset(require('superagent'));
+import { config4All } from './config';
+import { changeMd5 } from './util/mp4Util';
+import { Analyser, IVideoData } from './analyse/Analyser';
+import { DouyinAnalyser } from './analyse/DouyinAnalyser';
+import { KuaishouAnalyser } from './analyse/KuaishouAnalyser';
 const download = require('download');
 const path = require('path');
 const fs = require('fs');
 const fse = require('fs-extra');
 
-request = request.defaults({ jar: true });
-
-interface IVideoData {
-  videoUrl?: string;
-  cover?: string;
-  desc?: string;
-  mp3Url?: string;
-  pics?: string[];
-  user?: string;
-  type?: string;
-  refer?: string;
-}
-
-interface IProduct {
-  desc?: string;
-  cover?: string;
-  productId: string;
-  author?: any;
-  videoUrl?: string;
-  contentLink?: string;
-}
-
-interface IProductData {
-  productList: IProduct[];
-  max: string;
-  hasMore: boolean;
-  refer?: string;
-}
-
-interface IHeaders {
-  [propName: string]: string;
-}
-
 @Injectable()
 export class SmallvideoService {
-  async postHtml(url: string, headers?: IHeaders, data?: any): Promise<string> {
-    let request = superagentC.post(url).charset('utf-8');
-    if (data) {
-      request.send(data);
-    }
-    if (headers) {
-      request = request.set(headers);
-    }
-    const result: any = await request.catch((e: any) => {
-      console.log(e.status);
-    });
-    // console.log(result);
-    return result && result.text;
+  douyinAnalyser: Analyser;
+  kuaishouAnalyser: Analyser;
+  constructor() {
+    this.douyinAnalyser = new DouyinAnalyser();
+    this.kuaishouAnalyser = new KuaishouAnalyser();
   }
-  async getHtml(url: string, headers?: IHeaders): Promise<string> {
-    let request = superagentC.get(url).charset('utf-8');
-    if (headers) {
-      request = request.set(headers);
-    }
-    const result: any = await request.catch((e: any) => {
-      console.log(e.status);
-      return new Promise(res => {
-        setTimeout(() => {
-          res(this.getHtml(url, headers));
-        }, 3000);
-      });
-    });
-    return result && result.text;
-  }
-
-  _findDesObj(pageInfo) {
-    const keys = Object.keys(pageInfo);
-    let desObj = {};
-    keys.forEach(key => {
-      if (pageInfo[key]['aweme']) {
-        desObj = pageInfo[key];
-      }
-    });
-    return desObj;
-  }
-
-  async parseDouyinPhotoInfo(id: string): Promise<IVideoData> {
-    let videoUrl, desc, cover, mp3Url, pics, user;
-    const { html: result } = await this.getHtmlWith302(
-      `${config4DY.photoReqUrl}?item_ids=${id}`,
-    );
-    const ret = JSON.parse(result);
-    try {
-      const data = ret['item_list'][0];
-      desc = data['desc'];
-      mp3Url = data['music']['play_url']['uri'];
-      pics = data['images'].map(item => {
-        return item['url_list'].find(img => img.indexOf('.webp') === -1);
-      });
-    } catch (e) {
-      console.log(e);
-      videoUrl = desc = cover = mp3Url = '';
-    }
-    return { videoUrl, desc, cover, mp3Url, pics, user };
-  }
-
   _getRealLink(content: string): string {
     const contentReg = new RegExp(config4All.contentReg);
     const ret = contentReg.exec(content);
@@ -118,287 +26,44 @@ export class SmallvideoService {
     return '';
   }
 
-  async parseWithContent(content: string): Promise<IVideoData> {
+  async parseWithContent(
+    content: string,
+    cookie?: string,
+  ): Promise<IVideoData> {
     const realLink = this._getRealLink(content);
     if (realLink) {
       console.log(realLink);
       if (realLink.indexOf('douyin') !== -1) {
-        return this.parseDouyinVideoInfoByUrl(realLink);
+        return this.douyinAnalyser.parseVideoInfoByUrl(realLink, cookie);
       } else if (realLink.indexOf('kuaishou') !== -1) {
-        return this.parseKuaiShouVideoInfoByUrl(realLink);
+        return this.kuaishouAnalyser.parseVideoInfoByUrl(realLink, cookie);
       }
     }
     return {};
   }
 
-  async parseDouyinVideoInfoByUrl(url: string): Promise<IVideoData> {
-    const headers = config4DY.headers;
-    headers['Referer'] = url;
-
-    // const html = await this.getHtml(url);
-    const { html, options } = await this.getHtmlWith302(url, headers);
-    let videoUrl, desc, cover, mp3Url, pics, user;
-    let type = 'douyin';
-    if (options.url.indexOf('www.iesdouyin.com') === -1) {
-      if (/www.douyin.com\/user/g.test(options.url)) {
-        const path = options.url.split('?')[0];
-        const args = path.split('/');
-        user = args[args.length - 1];
-      } else {
-        const $ = cheerio.load(html);
-        const pageInfo = JSON.parse(
-          decodeURIComponent($('#RENDER_DATA').html() || '{}'),
-        );
-        const desObj = this._findDesObj(pageInfo);
-
-        // 解析vedioUrl
-        try {
-          videoUrl = `https:${desObj['aweme']['detail']['video']['playAddr'][0]['src']}`;
-          desc = desObj['aweme']['detail']['desc'];
-          cover = desObj['aweme']['detail']['video']['coverUrlList'][0];
-          mp3Url = desObj['aweme']['detail']['music']['playUrl']['urlList'][0];
-        } catch (e) {
-          console.log(e);
-          videoUrl = desc = cover = mp3Url = '';
-        }
-        if (videoUrl.indexOf('.mp3') !== -1) {
-          const _url = options.url.split('?')[0];
-          const args = _url.split('/');
-          const id = args[args.length - 1];
-          return this.parseDouyinPhotoInfo(id);
-        }
-      }
-    } else {
-      // 图片的分支
-      const _url = options.url;
-      const args = _url.split('/');
-      const id = args[args.length - 2];
-      return this.parseDouyinPhotoInfo(id);
-      // const {html:result} = await this.getHtmlWith302(`${config4DY.photoReqUrl}?item_ids=${id}`);
-      // console.log(result);
-      // const ret = JSON.parse(result);
-      // try{
-      //     const data = ret['item_list'][0];
-      //     desc = data['desc'];
-      //     mp3Url = data['music']['play_url']['uri'];
-      //     pics = data['images'].map((item)=>{
-      //         return item['url_list'].find((img)=>img.indexOf('.webp')===-1);
-      //     })
-      // }catch(e){
-      //     console.log(e);
-      //     videoUrl = desc = cover = mp3Url = '';
-      // }
-    }
-    return {
-      videoUrl,
-      desc,
-      cover,
-      mp3Url,
-      pics,
-      user,
-      type,
-    };
-  }
-
-  async getKuaishouProductList(
-    user: string,
-    size = 9,
-    max = '0',
-    refer = '',
-  ): Promise<IProductData> {
-    const sig3 = await sign4ks();
-    const url = `${config4KS.productListUrl}?__NS_sig3=${sig3}`;
-    console.log(url);
-    const text = await this.postHtml(
-      url,
-      {
-        Cookie: config4KS.headers['Cookie'],
-        Accept: 'application/json',
-        'user-agent': config4KS['userCenter'].headers['User-Agent'],
-        Referer: refer,
-        kpf: 'H5',
-        kpn: 'KUAISHOU',
-        host: 'c.kuaishou.com',
-        Origin: 'https://c.kuaishou.com',
-      },
-      {
-        eid: user,
-        count: size,
-        pcursor: max,
-      },
-    );
-    console.log(text);
-    const json = JSON.parse(text);
-    if (json.result === 1) {
-      const { feeds, pcursor } = json;
-      const productList = feeds.map(item => {
-        const shareInfo = item['share_info'];
-        const args = shareInfo.split('=');
-        const productId = args[args.length - 1];
-        return {
-          desc: item['caption'],
-          cover: item['coverUrls'][0]['url'],
-          productId,
-          contentLink: `https://c.kuaishou.com/fw/photo/${productId}`,
-          author: {
-            userName: item['userName'],
-            userEid: item['userEid'],
-          },
-          videoUrl: '',
-        };
-      });
-      const ret = {
-        hasMore: feeds.length > 0,
-        max: pcursor,
-        productList,
+  async getProductList(user, size, max, type, refer?, cookie?) {
+    return (
+      this.getAnalyserByType(type)?.getProductList(
+        user,
+        size,
+        max,
         refer,
-      };
-      return ret;
+        cookie,
+      ) || {}
+    );
+  }
+
+  async parseVideoInfoByUrl(type, url) {
+    return this.getAnalyserByType(type)?.parseVideoInfoByUrl(url) || {};
+  }
+
+  getAnalyserByType(type) {
+    if (type === 'douyin') {
+      return this.douyinAnalyser;
+    } else if (type === 'kuaishou') {
+      return this.kuaishouAnalyser;
     }
-    return { hasMore: true, max: '0', productList: [] };
-  }
-
-  async getDouYinProductList(
-    user: string,
-    size = 9,
-    max = '0',
-  ): Promise<IProductData> {
-    const url = `${
-      config4DY.productListUrl
-    }?sec_uid=${user}&count=${size}&max_cursor=${max}&_signature=${generateSignature(
-      user,
-    )}`;
-    console.log(url);
-
-    const { html } = await this.getHtmlWith302(url);
-    const json = JSON.parse(html);
-
-    const hasMore = json['has_more'];
-    const maxCursor = json['max_cursor'];
-    const list = json['aweme_list'];
-    const productList = list.map(item => {
-      const cover = item['video']['cover']['url_list'][0];
-      const videoUrl = item['video']['play_addr']['url_list'][0];
-      return {
-        desc: item['desc'],
-        cover,
-        productId: item['aweme_id'],
-        contentLink: `https://www.iesdouyin.com/share/video/${item['aweme_id']}/`,
-        author: item['author'],
-        videoUrl,
-      };
-    });
-
-    const ret = {
-      hasMore,
-      max: maxCursor,
-      productList,
-    };
-
-    return ret;
-  }
-
-  async _request(options): Promise<any> {
-    return new Promise((res, rej) => {
-      request(options, (err, response, body) => {
-        if (err) rej(err);
-        if (response.statusCode == 302) {
-          const cookie = response.headers['set-cookie'];
-          if (cookie) {
-            options.headers.Cookie = cookie;
-          }
-          options.url = response.headers['location'] || '';
-          if (options.url.indexOf('//') === 0) {
-            options.url = `https:${options.url}`;
-          }
-          options.headers['Referer'] = options.url;
-          console.log(response.headers);
-          console.log(options);
-          res(this._request(options));
-        } else {
-          res(body);
-        }
-      });
-    });
-  }
-
-  async getHtmlWith302(url: string, headers?: any): Promise<any> {
-    const options = {
-      url,
-      headers,
-      followRedirect: false,
-    };
-    const ret = await this._request(options);
-
-    return { html: ret, options };
-  }
-
-  getTextByReg(reg, text, flag = false) {
-    const r = new RegExp(reg);
-    const attr = r.exec(text);
-    const ret = attr && attr[1];
-    if (ret) {
-      if (flag) {
-        return ret;
-      }
-      return decodeURIComponent(JSON.parse(`"${ret}"`));
-    }
-    return '';
-  }
-
-  async parseKSUserCenterInfo(url: string): Promise<IVideoData> {
-    const { html, options } = await this.getHtmlWith302(url, {
-      'user-agent': config4KS['userCenter'].headers['User-Agent'],
-      Cookie: config4KS.headers['Cookie'],
-      Accept:
-        'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-      Referer: url,
-    });
-    // console.log(html);
-    // console.log(options);
-    const path = options.url.split('?')[0];
-    const args = path.split('/');
-    const user = args[args.length - 1];
-    console.log(user);
-    return { user, type: 'kuaishou', refer: options.url };
-  }
-
-  async parseKuaiShouVideoInfoByUrl(url: string): Promise<IVideoData> {
-    const { html, options } = await this.getHtmlWith302(url, {
-      'user-agent': config4KS.headers['User-Agent'],
-      Cookie: config4KS.headers['Cookie'],
-      Referer: url,
-    });
-    if (options.url.indexOf('https://c.kuaishou.com/fw/user/') !== -1) {
-      return await this.parseKSUserCenterInfo(url);
-    }
-    const text = html;
-    console.log(text);
-
-    const jsonData = this.getTextByReg(config4KS.jsonDataReg, text, true);
-    const json = JSON.parse(jsonData);
-    console.log(json);
-    // const videoUrl = this.getTextByReg(config4KS.videoReg, text);
-    const videoUrl = json['video']['srcNoMark'];
-    // const cover = this.getTextByReg(config4KS.coverReg, text);
-    const cover = json['video']['poster'];
-    // const desc = this.getTextByReg(config4KS.descReg, text);
-    const desc = json['video']['caption'];
-    // const picstr = this.getTextByReg(config4KS.picsReg, text, true);
-    // const domain = this.getTextByReg(config4KS.imgCDNReg, text);
-    const domain = json['video']['imageCDN'];
-    const pics = (json['video']['images'] || []).map(item => {
-      return `https://${domain}${item.path}`;
-    });
-
-    return {
-      videoUrl,
-      cover,
-      desc,
-      mp3Url: '',
-      pics,
-      type: 'kuaishou',
-    };
   }
 
   async test() {
@@ -418,16 +83,19 @@ export class SmallvideoService {
     // console.log(md5);
     // changeMd5('/Users/wangzidong/Documents/随时可删/test.mp4');
 
-    await this.douyinDownload(
-      'https://v.douyin.com/FgWSXH4/',
-      '/Users/gagaprince/Documents/临时存放随时可删/打鱼晒网/',
-    );
+    // await this.douyinDownload(
+    //   'https://v.douyin.com/FgWSXH4/',
+    //   '/Users/gagaprince/Documents/临时存放随时可删/打鱼晒网/',
+    // );
 
     // const ret = await this.parseWithContent(
     //   'https://v.kuaishou.com/l6TzMz 看了这么多快手，还是「沫沫」最好玩了！ 复制此消息，打开【快手】直接观看！',
     // );
 
-    return '';
+    return this.kuaishouAnalyser.parseVideoInfoByUrl(
+      //   'https://v.kuaishou.com/n2n8T4',
+      'https://v.kuaishou.com/lBkkeU',
+    );
   }
 
   async douyinDownloadByUser(user: string, filePath: string) {
@@ -435,7 +103,7 @@ export class SmallvideoService {
     let max = '0';
     fse.ensureDirSync(path.resolve(filePath));
     for (let i = 0; i < 200; i++) {
-      const ret = await this.getDouYinProductList(user, psize, max);
+      const ret = await this.douyinAnalyser.getProductList(user, psize, max);
       console.log(ret);
       const productList = ret.productList || [];
 
@@ -453,7 +121,7 @@ export class SmallvideoService {
           fs.writeFileSync(file, await download(videoUrl));
           changeMd5(file);
         } else {
-          const { pics } = await this.parseDouyinPhotoInfo(productId);
+          const { pics } = await this.douyinAnalyser.parsePhotoInfo(productId);
           if (pics && pics.length > 0) {
             for (let k = 0; k < pics.length; k++) {
               const file = path.join(
@@ -480,7 +148,7 @@ export class SmallvideoService {
   }
 
   async douyinDownload(url: string, filePath: string): Promise<any> {
-    const { user } = await this.parseDouyinVideoInfoByUrl(url);
+    const { user, refer } = await this.douyinAnalyser.parseVideoInfoByUrl(url);
     if (user) {
       this.douyinDownloadByUser(user, filePath);
     }
