@@ -26,6 +26,7 @@
     "@nestjs/platform-express": "^7.0.0",
     "@types/cheerio": "^0.22.17",
     "cheerio": "1.0.0-rc.9",
+    "crc-32": "^1.2.2",
     "download": "^8.0.0",
     "fs-extra": "^10.1.0",
     "node-mysql-promise": "^0.0.7",

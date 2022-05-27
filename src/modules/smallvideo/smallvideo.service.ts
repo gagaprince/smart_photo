@@ -4,6 +4,8 @@ import { changeMd5 } from './util/mp4Util';
 import { Analyser, IVideoData } from './analyse/Analyser';
 import { DouyinAnalyser } from './analyse/DouyinAnalyser';
 import { KuaishouAnalyser } from './analyse/KuaishouAnalyser';
+import { crc32 } from './util/crcUtil';
+import { XiGuaAnalyser } from './analyse/XiGuaAnalyser';
 const download = require('download');
 const path = require('path');
 const fs = require('fs');
@@ -13,9 +15,11 @@ const fse = require('fs-extra');
 export class SmallvideoService {
   douyinAnalyser: Analyser;
   kuaishouAnalyser: Analyser;
+  xiguaAnalyser: Analyser;
   constructor() {
     this.douyinAnalyser = new DouyinAnalyser();
     this.kuaishouAnalyser = new KuaishouAnalyser();
+    this.xiguaAnalyser = new XiGuaAnalyser();
   }
   _getRealLink(content: string): string {
     const contentReg = new RegExp(config4All.contentReg);
@@ -37,6 +41,8 @@ export class SmallvideoService {
         return this.douyinAnalyser.parseVideoInfoByUrl(realLink, cookie);
       } else if (realLink.indexOf('kuaishou') !== -1) {
         return this.kuaishouAnalyser.parseVideoInfoByUrl(realLink, cookie);
+      } else if (realLink.indexOf('ixigua') !== -1) {
+        return this.xiguaAnalyser.parseVideoInfoByUrl(realLink, cookie);
       }
     }
     return {};
@@ -78,23 +84,27 @@ export class SmallvideoService {
     //     return n[15 & e.charCodeAt(0)]
     // }));
     // console.log(s);
-
     // const md5 = getMd5('/Users/wangzidong/Documents/随时可删/test/4c1da9ec613f456285bd21d6bfe330fd.mp4');
     // console.log(md5);
     // changeMd5('/Users/wangzidong/Documents/随时可删/test.mp4');
-
     // await this.douyinDownload(
     //   'https://v.douyin.com/FgWSXH4/',
     //   '/Users/gagaprince/Documents/临时存放随时可删/打鱼晒网/',
     // );
-
     // const ret = await this.parseWithContent(
     //   'https://v.kuaishou.com/l6TzMz 看了这么多快手，还是「沫沫」最好玩了！ 复制此消息，打开【快手】直接观看！',
     // );
-
-    return this.kuaishouAnalyser.parseVideoInfoByUrl(
-      //   'https://v.kuaishou.com/n2n8T4',
-      'https://v.kuaishou.com/lBkkeU',
+    // return this.kuaishouAnalyser.parseVideoInfoByUrl(
+    //   //   'https://v.kuaishou.com/n2n8T4',
+    //   'https://v.kuaishou.com/lBkkeU',
+    // );
+    // return (
+    //   crc32(
+    //     '/video/urls/v/1/toutiao/mp4/v02004g10000c9lsnk3c77ubgprgh8f0?r=9646229263417287',
+    //   ) >>> 0
+    // );
+    return this.xiguaAnalyser.parseVideoInfoByUrl(
+      'https://v.ixigua.com/FtjcoWM/',
     );
   }
 
