@@ -103,9 +103,138 @@ export class SmallvideoService {
     //     '/video/urls/v/1/toutiao/mp4/v02004g10000c9lsnk3c77ubgprgh8f0?r=9646229263417287',
     //   ) >>> 0
     // );
-    return this.xiguaAnalyser.parseVideoInfoByUrl(
-      'https://v.ixigua.com/FtjcoWM/',
+    // return this.xiguaAnalyser.parseVideoInfoByUrl(
+    //   'https://v.ixigua.com/FtjcoWM/',
+    // );
+    // return this.parseWithContent('https://v.kuaishou.com/kvnhhw');
+    // return this.getProductList(
+    //   'Woshixiaoluya2',
+    //   10,
+    //   '0',
+    //   'kuaishou',
+    //   'https://c.kuaishou.com/fw/user/Woshixiaoluya2?fid=479129078&cc=share_copylink&followRefer=151&shareMethod=TOKEN&kpn=KUAISHOU&subBiz=PROFILE&shareId=16964838278256&shareToken=X3OGQn8z1y531Zo&shareMode=APP&originShareId=16964838278256&appType=1&shareObjectId=2386435122&shareUrlOpened=0&timestamp=1653755441789',
+    //   'did=web_5236f9bf38174d47b63990491e2bc950; didv=1653758526000;',
+    // );
+    (async () => {
+      await this.kuaishouDownload(
+        'https://v.kuaishou.com/kn9ajK',
+        '/Users/gagaprince/Documents/临时存放随时可删/校花爱调皮/',
+      );
+      await this.kuaishouDownload(
+        'https://v.kuaishou.com/kNdfKM',
+        '/Users/gagaprince/Documents/临时存放随时可删/蛋蛋的图图/',
+      );
+      await this.kuaishouDownload(
+        'https://v.kuaishou.com/nn6a0Z',
+        '/Users/gagaprince/Documents/临时存放随时可删/许小姐丫/',
+      );
+      await this.kuaishouDownload(
+        'https://v.kuaishou.com/kj4gfG',
+        '/Users/gagaprince/Documents/临时存放随时可删/火小狐影视/',
+      );
+      await this.kuaishouDownload(
+        'https://v.kuaishou.com/jHhWSC',
+        '/Users/gagaprince/Documents/临时存放随时可删/绿豆茶不茶/',
+      );
+      await this.kuaishouDownload(
+        'https://v.kuaishou.com/kW0e91',
+        '/Users/gagaprince/Documents/临时存放随时可删/分享～智慧/',
+      );
+      await this.kuaishouDownload(
+        'https://v.kuaishou.com/mx58Zj',
+        '/Users/gagaprince/Documents/临时存放随时可删/嫂子/',
+      );
+    })();
+
+    return {};
+  }
+
+  async kuaishouDownload(url: string, filePath: string) {
+    const { user, query = '', refer, cookie } = await this.parseWithContent(
+      url,
     );
+    if (user) {
+      this.kuaishouDownloadByUser(user, filePath, refer, cookie, query);
+    }
+  }
+
+  async kuaishouDownloadByUser(
+    user: string,
+    filePath: string,
+    refer: string,
+    cookie: string,
+    query: string,
+  ) {
+    const psize = 10;
+    let max = '0';
+    fse.ensureDirSync(path.resolve(filePath));
+    for (let i = 0; i < 200; i++) {
+      const ret: any = await this.kuaishouAnalyser.getProductList(
+        user,
+        psize,
+        max,
+        refer,
+        cookie,
+      );
+      console.log(ret);
+      const productList = ret.productList || [];
+      let retry = 0;
+      for (let j = 0; j < productList.length; j++) {
+        const { contentLink, productId, desc } = productList[j];
+        const realLink = `${contentLink}${query}`;
+        console.log(realLink);
+        const {
+          videoUrl,
+          pics,
+        } = await this.kuaishouAnalyser.parseVideoInfoByUrl(realLink, cookie);
+        console.log(videoUrl, pics);
+        if (!videoUrl && !pics) {
+          if (retry < 5) {
+            retry++;
+            j--;
+            continue;
+          }
+        }
+        retry = 0;
+        if (videoUrl) {
+          const file = path.join(
+            filePath,
+            `${productId}_${desc}.mp4`.replace('/', '_'),
+          );
+          const oldFile = path.join(filePath, `${productId}.mp4`);
+          if (fse.pathExistsSync(file) || fse.pathExistsSync(oldFile)) {
+            continue;
+          }
+          fs.writeFileSync(file, await download(videoUrl));
+          changeMd5(file);
+        } else if (pics && pics.length) {
+          for (let k = 0; k < pics.length; k++) {
+            const file = path.join(
+              filePath,
+              `${productId}_${desc}`.replace('/', '_'),
+              `${k}.jpg`,
+            );
+            const oldFile = path.join(filePath, `${productId}_${k}.jpg`);
+            if (fse.pathExistsSync(file) || fse.pathExistsSync(oldFile)) {
+              continue;
+            }
+            const filedir = path.join(
+              filePath,
+              `${productId}_${desc}`.replace('/', '_'),
+            );
+            fse.ensureDirSync(filedir);
+            fs.writeFileSync(file, await download(pics[k]));
+            changeMd5(file);
+          }
+        }
+        console.log(`下载完成----${desc}`);
+      }
+
+      if (!ret.hasMore) {
+        break;
+      }
+      max = ret.max;
+    }
   }
 
   async douyinDownloadByUser(user: string, filePath: string) {
