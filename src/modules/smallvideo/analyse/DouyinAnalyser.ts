@@ -20,6 +20,7 @@ export class DouyinAnalyser extends BaseAnalyser {
     headers['Referer'] = url;
 
     // const html = await this.getHtml(url);
+    console.log(url);
     const { html, options } = await getHtmlWith302(url, headers);
     let videoUrl, desc, cover, mp3Url, pics, user;
     let type = 'douyin';
@@ -106,30 +107,38 @@ export class DouyinAnalyser extends BaseAnalyser {
     )}`;
 
     const { html } = await getHtmlWith302(url);
-    const json = JSON.parse(html);
+    try {
+      console.log(html);
+      const json = JSON.parse(html);
 
-    const hasMore = json['has_more'];
-    const maxCursor = json['max_cursor'];
-    const list = json['aweme_list'];
-    const productList = list.map(item => {
-      const cover = item['video']['cover']['url_list'][0];
-      const videoUrl = item['video']['play_addr']['url_list'][0];
-      return {
-        desc: item['desc'],
-        cover,
-        productId: item['aweme_id'],
-        contentLink: `https://www.iesdouyin.com/share/video/${item['aweme_id']}/`,
-        author: item['author'],
-        videoUrl,
+      const hasMore = json['has_more'];
+      const maxCursor = json['max_cursor'];
+      const list = json['aweme_list'];
+      const productList = list.map(item => {
+        const cover = item['video']['cover']['url_list'][0];
+        const videoUrl = item['video']['play_addr']['url_list'][0];
+        return {
+          desc: item['desc'],
+          cover,
+          productId: item['aweme_id'],
+          contentLink: `https://www.iesdouyin.com/share/video/${item['aweme_id']}/`,
+          author: item['author'],
+          videoUrl,
+        };
+      });
+      const ret = {
+        hasMore,
+        max: maxCursor,
+        productList,
       };
-    });
 
-    const ret = {
-      hasMore,
-      max: maxCursor,
-      productList,
+      return ret;
+    } catch (e) {}
+
+    return {
+      hasMore: true,
+      max,
+      productList: [],
     };
-
-    return ret;
   }
 }

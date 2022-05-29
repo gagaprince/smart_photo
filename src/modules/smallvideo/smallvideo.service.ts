@@ -10,9 +10,11 @@ const download = require('download');
 const path = require('path');
 const fs = require('fs');
 const fse = require('fs-extra');
+const parse = require('url-parse');
 
 @Injectable()
 export class SmallvideoService {
+  domainList: string[];
   douyinAnalyser: Analyser;
   kuaishouAnalyser: Analyser;
   xiguaAnalyser: Analyser;
@@ -20,6 +22,7 @@ export class SmallvideoService {
     this.douyinAnalyser = new DouyinAnalyser();
     this.kuaishouAnalyser = new KuaishouAnalyser();
     this.xiguaAnalyser = new XiGuaAnalyser();
+    this.readDomain();
   }
   _getRealLink(content: string): string {
     const contentReg = new RegExp(config4All.contentReg);
@@ -37,13 +40,22 @@ export class SmallvideoService {
     const realLink = this._getRealLink(content);
     if (realLink) {
       console.log(realLink);
+      let ret;
       if (realLink.indexOf('douyin') !== -1) {
-        return this.douyinAnalyser.parseVideoInfoByUrl(realLink, cookie);
+        ret = await this.douyinAnalyser.parseVideoInfoByUrl(realLink, cookie);
       } else if (realLink.indexOf('kuaishou') !== -1) {
-        return this.kuaishouAnalyser.parseVideoInfoByUrl(realLink, cookie);
+        ret = await this.kuaishouAnalyser.parseVideoInfoByUrl(realLink, cookie);
       } else if (realLink.indexOf('ixigua') !== -1) {
-        return this.xiguaAnalyser.parseVideoInfoByUrl(realLink, cookie);
+        ret = await this.xiguaAnalyser.parseVideoInfoByUrl(realLink, cookie);
       }
+
+      const { videoUrl } = ret;
+      if (videoUrl) {
+        this.registDomain(videoUrl);
+        this.saveDomain();
+      }
+
+      return ret;
     }
     return {};
   }
@@ -116,37 +128,59 @@ export class SmallvideoService {
     //   'did=web_5236f9bf38174d47b63990491e2bc950; didv=1653758526000;',
     // );
     (async () => {
-      await this.kuaishouDownload(
-        'https://v.kuaishou.com/kn9ajK',
-        '/Users/gagaprince/Documents/临时存放随时可删/校花爱调皮/',
+      await this.douyinDownload(
+        'https://v.douyin.com/F73PfFC/',
+        '/Users/gagaprince/Documents/临时存放随时可删/丸糯/',
       );
-      await this.kuaishouDownload(
-        'https://v.kuaishou.com/kNdfKM',
-        '/Users/gagaprince/Documents/临时存放随时可删/蛋蛋的图图/',
-      );
-      await this.kuaishouDownload(
-        'https://v.kuaishou.com/nn6a0Z',
-        '/Users/gagaprince/Documents/临时存放随时可删/许小姐丫/',
-      );
-      await this.kuaishouDownload(
-        'https://v.kuaishou.com/kj4gfG',
-        '/Users/gagaprince/Documents/临时存放随时可删/火小狐影视/',
-      );
-      await this.kuaishouDownload(
-        'https://v.kuaishou.com/jHhWSC',
-        '/Users/gagaprince/Documents/临时存放随时可删/绿豆茶不茶/',
-      );
-      await this.kuaishouDownload(
-        'https://v.kuaishou.com/kW0e91',
-        '/Users/gagaprince/Documents/临时存放随时可删/分享～智慧/',
-      );
-      await this.kuaishouDownload(
-        'https://v.kuaishou.com/mx58Zj',
-        '/Users/gagaprince/Documents/临时存放随时可删/嫂子/',
-      );
+      //   await this.kuaishouDownload(
+      //     'https://v.kuaishou.com/kNdfKM',
+      //     '/Users/gagaprince/Documents/临时存放随时可删/蛋蛋的图图/',
+      //   );
+      //   await this.kuaishouDownload(
+      //     'https://v.kuaishou.com/nn6a0Z',
+      //     '/Users/gagaprince/Documents/临时存放随时可删/许小姐丫/',
+      //   );
+      //   await this.kuaishouDownload(
+      //     'https://v.kuaishou.com/kj4gfG',
+      //     '/Users/gagaprince/Documents/临时存放随时可删/火小狐影视/',
+      //   );
+      //   await this.kuaishouDownload(
+      //     'https://v.kuaishou.com/jHhWSC',
+      //     '/Users/gagaprince/Documents/临时存放随时可删/绿豆茶不茶/',
+      //   );
+      //   await this.kuaishouDownload(
+      //     'https://v.kuaishou.com/kW0e91',
+      //     '/Users/gagaprince/Documents/临时存放随时可删/分享～智慧/',
+      //   );
+      //   await this.kuaishouDownload(
+      //     'https://v.kuaishou.com/mx58Zj',
+      //     '/Users/gagaprince/Documents/临时存放随时可删/嫂子/',
+      //   );
     })();
 
     return {};
+  }
+
+  readDomain() {
+    const cwd = process.cwd();
+    const filePath = path.resolve(cwd, 'tmp/domain.txt');
+    const domainContent = fs.readFileSync(filePath, 'utf-8') || '';
+    console.log(domainContent);
+    this.domainList = domainContent.split(';');
+  }
+  registDomain(url: string) {
+    const { origin } = parse(url);
+    console.log(origin);
+    if (!this.domainList.includes(origin)) {
+      this.domainList.push(origin);
+    }
+    console.log(this.domainList);
+  }
+  saveDomain() {
+    const domainContent = this.domainList.join(';');
+    const cwd = process.cwd();
+    const filePath = path.resolve(cwd, 'tmp/domain.txt');
+    fs.writeFileSync(filePath, domainContent);
   }
 
   async kuaishouDownload(url: string, filePath: string) {
@@ -154,7 +188,7 @@ export class SmallvideoService {
       url,
     );
     if (user) {
-      this.kuaishouDownloadByUser(user, filePath, refer, cookie, query);
+      await this.kuaishouDownloadByUser(user, filePath, refer, cookie, query);
     }
   }
 
@@ -197,18 +231,21 @@ export class SmallvideoService {
         }
         retry = 0;
         if (videoUrl) {
+          this.registDomain(videoUrl);
           const file = path.join(
             filePath,
-            `${productId}_${desc}.mp4`.replace('/', '_'),
+            `${productId}_${desc}.mp4`.replace(/\//g, '_'),
           );
           const oldFile = path.join(filePath, `${productId}.mp4`);
           if (fse.pathExistsSync(file) || fse.pathExistsSync(oldFile)) {
             continue;
           }
+          console.log('file', file);
           fs.writeFileSync(file, await download(videoUrl));
           changeMd5(file);
         } else if (pics && pics.length) {
           for (let k = 0; k < pics.length; k++) {
+            this.registDomain(pics[k]);
             const file = path.join(
               filePath,
               `${productId}_${desc}`.replace('/', '_'),
@@ -228,6 +265,7 @@ export class SmallvideoService {
           }
         }
         console.log(`下载完成----${desc}`);
+        this.saveDomain();
       }
 
       if (!ret.hasMore) {
@@ -249,34 +287,44 @@ export class SmallvideoService {
       for (let j = 0; j < productList.length; j++) {
         const { videoUrl, productId, desc } = productList[j];
         if (videoUrl && videoUrl.indexOf('.mp3') == -1) {
+          this.registDomain(videoUrl);
           const file = path.join(
             filePath,
-            `${productId}_${desc}.mp4`.replace('/', '_'),
+            `${productId}_${desc}.mp4`.replace(/\//g, '_'),
           );
           const oldFile = path.join(filePath, `${productId}.mp4`);
           if (fse.pathExistsSync(file) || fse.pathExistsSync(oldFile)) {
             continue;
           }
+          console.log('file', file);
           fs.writeFileSync(file, await download(videoUrl));
           changeMd5(file);
         } else {
           const { pics } = await this.douyinAnalyser.parsePhotoInfo(productId);
           if (pics && pics.length > 0) {
             for (let k = 0; k < pics.length; k++) {
+              this.registDomain(pics[k]);
               const file = path.join(
                 filePath,
-                `${productId}_${desc}_${k}.jpg`.replace('/', '_'),
+                `${productId}_${desc}`.replace('/', '_'),
+                `${k}.jpg`,
               );
               const oldFile = path.join(filePath, `${productId}_${k}.jpg`);
               if (fse.pathExistsSync(file) || fse.pathExistsSync(oldFile)) {
                 continue;
               }
+              const filedir = path.join(
+                filePath,
+                `${productId}_${desc}`.replace('/', '_'),
+              );
+              fse.ensureDirSync(filedir);
               fs.writeFileSync(file, await download(pics[k]));
               changeMd5(file);
             }
           }
         }
         console.log(`下载完成----${desc}`);
+        this.saveDomain();
       }
 
       if (!ret.hasMore) {
@@ -289,7 +337,7 @@ export class SmallvideoService {
   async douyinDownload(url: string, filePath: string): Promise<any> {
     const { user, refer } = await this.douyinAnalyser.parseVideoInfoByUrl(url);
     if (user) {
-      this.douyinDownloadByUser(user, filePath);
+      await this.douyinDownloadByUser(user, filePath);
     }
     return '';
   }

@@ -1,7 +1,7 @@
 const charset = require('superagent-charset');
 const superagentC = charset(require('superagent'));
 let request = require('request');
-request = request.defaults({ jar: true });
+request = request.defaults({ jar: true, timeout: 5000 });
 
 interface IHeaders {
   [propName: string]: string;
@@ -51,7 +51,10 @@ export const getHtmlWith302 = async (
     headers,
     followRedirect: false,
   };
-  const ret = await _request(options);
+  let ret = '';
+  try {
+    ret = await _request(options);
+  } catch (e) {}
 
   return { html: ret, options };
 };
