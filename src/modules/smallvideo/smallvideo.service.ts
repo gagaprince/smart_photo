@@ -128,10 +128,10 @@ export class SmallvideoService {
     //   'did=web_5236f9bf38174d47b63990491e2bc950; didv=1653758526000;',
     // );
     (async () => {
-      await this.douyinDownload(
-        'https://v.douyin.com/F73PfFC/',
-        '/Users/gagaprince/Documents/临时存放随时可删/丸糯/',
-      );
+      //   await this.douyinDownload(
+      //     'https://v.douyin.com/F73PfFC/',
+      //     '/Users/gagaprince/Documents/临时存放随时可删/丸糯/',
+      //   );
       //   await this.kuaishouDownload(
       //     'https://v.kuaishou.com/kNdfKM',
       //     '/Users/gagaprince/Documents/临时存放随时可删/蛋蛋的图图/',

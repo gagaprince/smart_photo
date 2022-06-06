@@ -31,7 +31,21 @@ export class KuaishouAnalyser extends BaseAnalyser {
   };
 
   async parseVideoInfoByUrl(url: string, cookie2?: string) {
-    const { cookie, body, options } = await this.getHtmlByCircle(url, cookie2);
+    let { cookie, body, options } = await this.getHtmlByCircle(url, cookie2);
+
+    if (
+      options.url.indexOf('https://v.m.chenzhongtech.com/fw/next-photo/') !== -1
+    ) {
+      // 临时方案 快手链接失效
+      const oldUrl = options.url.replace(
+        'https://v.m.chenzhongtech.com/fw/next-photo/',
+        'https://c.kuaishou.com/fw/photo/',
+      );
+      const ret = await this.getHtmlByCircle(oldUrl, cookie2);
+      cookie = ret.cookie;
+      body = ret.body;
+      options = ret.options;
+    }
 
     if (options.url.indexOf('https://c.kuaishou.com/fw/user/') !== -1) {
       const { pathname, query } = parse(options.url);
@@ -46,6 +60,8 @@ export class KuaishouAnalyser extends BaseAnalyser {
     }
 
     try {
+      console.log(options.url);
+      console.log(body);
       const jsonData =
         this.getTextByReg(this.config.jsonDataReg, body, true) || '{}';
 
@@ -67,7 +83,9 @@ export class KuaishouAnalyser extends BaseAnalyser {
         type: 'kuaishou',
         user,
       };
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
     return {};
   }
 
