@@ -41,6 +41,11 @@ export class DouyinAnalyser extends BaseAnalyser {
           desc = desObj['aweme']['detail']['desc'];
           cover = desObj['aweme']['detail']['video']['coverUrlList'][0];
           mp3Url = desObj['aweme']['detail']['music']['playUrl']['urlList'][0];
+          const awemeType = desObj['aweme']['detail']['awemeType'] || 0;
+          console.log(`awemeType:${awemeType}`);
+          if (awemeType !== 0) {
+            videoUrl = '.mp3';
+          }
         } catch (e) {
           console.log(e);
           videoUrl = desc = cover = mp3Url = '';
@@ -114,13 +119,14 @@ export class DouyinAnalyser extends BaseAnalyser {
     const productList = list.map(item => {
       const cover = item['video']['cover']['url_list'][0];
       const videoUrl = item['video']['play_addr']['url_list'][0];
+      const awemeType = item['aweme_type'];
       return {
         desc: item['desc'],
         cover,
         productId: item['aweme_id'],
         contentLink: `https://www.iesdouyin.com/share/video/${item['aweme_id']}/`,
         author: item['author'],
-        videoUrl,
+        videoUrl: awemeType === 2 ? '' : videoUrl,
       };
     });
 
