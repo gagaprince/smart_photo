@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { Injectable } from '@nestjs/common';
 import { config4All } from './config';
 import { changeMd5 } from './util/mp4Util';
