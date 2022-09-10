@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body } from '@nestjs/common';
 import { WordsService } from './words.service';
 
 @Controller('words')
@@ -17,5 +17,36 @@ export class WordsController {
   async allLessons(@Query() query: any): Promise<any> {
     const { lessons = '小学,初中,高中,大学,推荐,其他' } = query;
     return this.wordsService.searchLessonByTags(lessons.split(','));
+  }
+
+  @Get('/lessonDetail')
+  async lessonDetail(@Query() query: any): Promise<any> {
+    const { books = '' } = query;
+    if (books) {
+      return this.wordsService.searchLessonDetail(books.split(','));
+    }
+    return {};
+  }
+
+  @Get('/wordListByLesson')
+  async wordsListByLesson(@Query() query: any): Promise<any> {
+    const { lesson = '', level = '', unit } = query;
+    if (lesson && level) {
+      const words = await this.wordsService.searchWordListByLesson(
+        lesson,
+        level,
+        unit,
+      );
+      return { words };
+    }
+    return { words: [] };
+  }
+
+  @Post('/wordDetail')
+  async wordDetail(@Body('words') words: string[]): Promise<any> {
+    if (words) {
+      return await this.wordsService.searchWordDetail(words);
+    }
+    return {};
   }
 }
