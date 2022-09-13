@@ -86,4 +86,16 @@ export class WordsService {
     });
     return wordMap;
   }
+
+  async createStudyPlan(lesson, level, unit = '', openid) {
+    // 查看当前用户是否有已经在途的plan
+    // 如果 book lesson 一致 则直接改状态
+    // 如果 book lesson 不一致 返回前端提示 确认后 切换状态
+    // 如果没有在途的plan 直接创建返回
+    // 返回 当前plan
+    const currentPlan = await this.db.selectPlanByUser(openid);
+    if (currentPlan) {
+    } else {
+    }
+  }
 }
