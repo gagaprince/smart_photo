@@ -117,7 +117,23 @@ export class DBService {
       })
       .select();
     if (rets && rets.length) {
-      return rets[0];
+      return rets;
+    }
+    return;
+  }
+
+  async selectPlanByLessonInfo(lesson, level, unit, openid) {
+    const rets = await this.mysql
+      .table('study_plan')
+      .where({
+        openid,
+        book: lesson,
+        level,
+        unit,
+      })
+      .select();
+    if (rets && rets.length) {
+      return rets;
     }
     return;
   }
