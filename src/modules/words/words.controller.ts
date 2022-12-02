@@ -49,4 +49,15 @@ export class WordsController {
     }
     return {};
   }
+
+  @Get('/createStudyPlan')
+  async createStudyPlan(@Body() body: any): Promise<any> {
+    const { lesson = '', level = '', unit = '', openid } = body;
+    if (lesson && level) {
+      const { lesson = '', level = '', unit = '', openid } = body;
+      await this.wordsService.createStudyPlan(lesson, level, unit, openid);
+    } else {
+      return {};
+    }
+  }
 }

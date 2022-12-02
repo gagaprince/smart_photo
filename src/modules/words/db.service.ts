@@ -38,6 +38,22 @@ export interface ILessonInfo {
   book_render_name: string;
 }
 
+export interface IStudyPlan {
+  id?: number;
+  openid?: string;
+  book?: string;
+  level?: string;
+  unit?: string;
+  total_lesson?: number;
+  current_lesson?: number;
+  current_lesson_rate?: number;
+  ctime?: number;
+  utime?: number;
+  study_status?: number;
+  hold_words?: string;
+  new_words?: string;
+}
+
 @Injectable()
 export class DBService {
   mysql: any;
@@ -90,5 +106,35 @@ export class DBService {
         word: ['IN', words],
       })
       .select();
+  }
+
+  async selectPlanByUser(openid: string, study_status: number) {
+    const rets = await this.mysql
+      .table('study_plan')
+      .where({
+        openid,
+        study_status,
+      })
+      .select();
+    if (rets && rets.length) {
+      return rets;
+    }
+    return;
+  }
+
+  async selectPlanByLessonInfo(lesson, level, unit, openid) {
+    const rets = await this.mysql
+      .table('study_plan')
+      .where({
+        openid,
+        book: lesson,
+        level,
+        unit,
+      })
+      .select();
+    if (rets && rets.length) {
+      return rets;
+    }
+    return;
   }
 }
