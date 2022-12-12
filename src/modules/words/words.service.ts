@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Injectable } from '@nestjs/common';
-import { DBService, ILessonInfo, IWord } from './db.service';
+import { DBService, ILessonInfo, IStudyPlan, IWord } from './db.service';
 
 export interface ILessonTagMap {
   [key: string]: ILessonInfo[];
@@ -115,16 +116,33 @@ export class WordsService {
         if (study_status === 2) {
           // 已结束
           hasCreatePlan.total_lesson = wordsArray.length;
-          hasCreatePlan.current_lesson = 1;
-          hasCreatePlan.current_lesson_rate = Math.floor(
-            100 / wordsArray.length,
-          );
+          hasCreatePlan.current_lesson = 0;
+          hasCreatePlan.current_lesson_rate = 0;
           hasCreatePlan.hold_words = '';
           hasCreatePlan.new_words = wordsArray[0].join(',');
         }
+        hasCreatePlan.utime = Date.now();
         hasCreatePlan.study_status = 1;
         // 更新此计划
+        await this.db.updatePlan(hasCreatePlan);
+        return hasCreatePlan;
       } else {
+        const newCreatePlan: IStudyPlan = {
+          book: lesson,
+          level,
+          unit,
+          openid,
+        };
+        newCreatePlan.total_lesson = wordsArray.length;
+        newCreatePlan.current_lesson = 0;
+        newCreatePlan.current_lesson_rate = 0;
+        newCreatePlan.hold_words = '';
+        newCreatePlan.new_words = wordsArray[0].join(',');
+        newCreatePlan.study_status = 1;
+        newCreatePlan.ctime = Date.now();
+        newCreatePlan.utime = Date.now();
+        await this.db.insertPlan(newCreatePlan);
+        return newCreatePlan;
       }
     } else {
       throw new Error('此课程没有单词');
@@ -138,13 +156,27 @@ export class WordsService {
     // 如果没有在途的plan 直接创建返回
     // 返回 当前plan
     const currentPlanArray = await this.db.selectPlanByUser(openid, 1);
-    if (currentPlanArray) {
+    if (currentPlanArray && currentPlanArray.length) {
       const { book } = currentPlanArray[0];
       if (book === lesson) {
         // 修改currentPlan 状态为暂停
+        currentPlanArray[0].study_status = 3; // 中断
+        await this.db.updatePlan(currentPlanArray[0]);
       }
-      // 检测后创造新的plan
-    } else {
     }
+    // 检测后创造新的plan
+    return await this._createStudyPlanAfterCheck(lesson, level, unit, openid);
+  }
+
+  async learnedNewWordOnPlan(planId, openidOut, word) {
+    // 查出这个planId 对应的plan 对比openid是否正确 不正确则抛出异常
+    // 正确的话 就重新设置一个新老词 然后 update
+    const plan = await this.db.selectPlanById(planId);
+    if (plan) {
+      const { openid, new_words, hold_words } = plan;
+      if (openid === openidOut) {
+      }
+    }
+    throw new Error('没有此计划，或者没有权限');
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Injectable } from '@nestjs/common';
 const Mysql = require('node-mysql-promise');
@@ -108,6 +109,19 @@ export class DBService {
       .select();
   }
 
+  async selectPlanById(planId: number) {
+    const rets = await this.mysql
+      .table('study_plan')
+      .where({
+        id: planId,
+      })
+      .select();
+    if (rets && rets.length) {
+      return rets[0];
+    }
+    return;
+  }
+
   async selectPlanByUser(openid: string, study_status: number) {
     const rets = await this.mysql
       .table('study_plan')
@@ -133,8 +147,33 @@ export class DBService {
       })
       .select();
     if (rets && rets.length) {
-      return rets;
+      return rets[0];
     }
     return;
+  }
+
+  async updatePlan(plan: IStudyPlan) {
+    const { openid, book, level, unit } = plan;
+    return await this.mysql
+      .table('study_plan')
+      .where({
+        openid,
+        book,
+        level,
+        unit,
+      })
+      .update(plan);
+  }
+
+  async insertPlan(plan: IStudyPlan) {
+    return this.mysql
+      .table('study_plan')
+      .add(plan)
+      .then(insertId => {
+        console.log(insertId);
+      })
+      .catch(e => {
+        console.log(e);
+      });
   }
 }

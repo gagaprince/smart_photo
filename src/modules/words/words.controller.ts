@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Controller, Get, Post, Query, Body } from '@nestjs/common';
 import { WordsService } from './words.service';
 
@@ -50,12 +51,26 @@ export class WordsController {
     return {};
   }
 
-  @Get('/createStudyPlan')
+  @Post('/createStudyPlan')
   async createStudyPlan(@Body() body: any): Promise<any> {
     const { lesson = '', level = '', unit = '', openid } = body;
     if (lesson && level) {
-      const { lesson = '', level = '', unit = '', openid } = body;
-      await this.wordsService.createStudyPlan(lesson, level, unit, openid);
+      return await this.wordsService.createStudyPlan(
+        lesson,
+        level,
+        unit,
+        openid,
+      );
+    } else {
+      return {};
+    }
+  }
+
+  @Post('/learnedNewWordOnPlan')
+  async learnedNewWordOnPlan(@Body() body: any) {
+    const { planId, openid, word = '' } = body;
+    if (planId && openid && word) {
+      return await this.wordsService.learnedNewWordOnPlan(planId, openid, word);
     } else {
       return {};
     }
