@@ -114,7 +114,9 @@ async function _request(options): Promise<any> {
       if (response.statusCode == 302) {
         const cookie = response.headers['set-cookie'];
         if (cookie) {
-          options.headers.Cookie = cookie;
+          options.headers.Cookie = options.headers.Cookie
+            ? `${options.headers.Cookie} ${cookie}`
+            : cookie;
         }
         options.url = response.headers['location'] || '';
         if (options.url.indexOf('//') === 0) {
