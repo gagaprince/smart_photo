@@ -55,7 +55,14 @@ export class DouyinAnalyser extends BaseAnalyser {
         if (videoUrl.indexOf('.mp3') !== -1) {
           console.log('竟然是图片');
           // 认为是图片
-          pics = desObj['aweme']['detail']['video']['coverUrlList'];
+          try{
+            const imgObjs = desObj['aweme']['detail']['images'] || [];
+            pics = imgObjs.map(imgObj => imgObj.urlList[0]);
+            // console.log(pics);
+          }catch(e){
+            console.log(e);
+            videoUrl = desc = cover = mp3Url = '';
+          }
           // const _url = options.url.split('?')[0];
           // const args = _url.split('/');
           // const id = args[args.length - 1];
