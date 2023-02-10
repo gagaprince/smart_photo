@@ -51,6 +51,7 @@ export const getHtmlWith302 = async (
     headers,
     followRedirect: false,
   };
+  // console.log('options',options);
   const ret = await _request(options);
 
   return { html: ret, options };

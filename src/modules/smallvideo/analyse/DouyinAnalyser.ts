@@ -16,13 +16,14 @@ export class DouyinAnalyser extends BaseAnalyser {
     productListUrl: 'https://www.iesdouyin.com/web/api/v2/aweme/post/',
   };
   async parseVideoInfoByUrl(url: string) {
-    const headers = this.config.headers;
+    const headers = { ...this.config.headers };
     headers['Referer'] = url;
 
     // const html = await this.getHtml(url);
     const { html, options } = await getHtmlWith302(url, headers);
     let videoUrl, desc, cover, mp3Url, pics, user;
     let type = 'douyin';
+    // console.log(html);
     if (options.url.indexOf('www.iesdouyin.com') === -1) {
       if (/www.douyin.com\/user/g.test(options.url)) {
         const path = options.url.split('?')[0];
