@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { Controller, Get, Post, Query, Body } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body, HttpCode } from '@nestjs/common';
 import { WordsService } from './words.service';
 
 @Controller('words')
@@ -44,6 +44,7 @@ export class WordsController {
   }
 
   @Post('/wordDetail')
+  @HttpCode(200)
   async wordDetail(@Body('words') words: string[]): Promise<any> {
     if (words) {
       return await this.wordsService.searchWordDetail(words);
@@ -52,6 +53,7 @@ export class WordsController {
   }
 
   @Post('/createStudyPlan')
+  @HttpCode(200)
   async createStudyPlan(@Body() body: any): Promise<any> {
     const { lesson = '', level = '', unit = '', openid } = body;
     if (lesson && level) {
