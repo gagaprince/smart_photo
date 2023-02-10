@@ -24,6 +24,7 @@ export class DouyinAnalyser extends BaseAnalyser {
     let videoUrl, desc, cover, mp3Url, pics, user;
     let type = 'douyin';
     // console.log(html);
+    // console.log(options.url);
     if (options.url.indexOf('www.iesdouyin.com') === -1) {
       if (/www.douyin.com\/user/g.test(options.url)) {
         const path = options.url.split('?')[0];
@@ -52,14 +53,18 @@ export class DouyinAnalyser extends BaseAnalyser {
           videoUrl = desc = cover = mp3Url = '';
         }
         if (videoUrl.indexOf('.mp3') !== -1) {
-          const _url = options.url.split('?')[0];
-          const args = _url.split('/');
-          const id = args[args.length - 1];
-          return this.parsePhotoInfo(id);
+          console.log('竟然是图片');
+          // 认为是图片
+          pics = desObj['aweme']['detail']['video']['coverUrlList'];
+          // const _url = options.url.split('?')[0];
+          // const args = _url.split('/');
+          // const id = args[args.length - 1];
+          // return this.parsePhotoInfo(id);
         }
       }
     } else {
       // 图片的分支
+      console.log('是图片');
       const _url = options.url;
       const args = _url.split('/');
       const id = args[args.length - 2];
