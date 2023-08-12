@@ -1,6 +1,6 @@
 import { BaseAnalyser } from './Analyser';
 
-import { getHtmlWith302, postHtml } from '../util/httpUtil';
+import { getHtmlWith302, postHtml, simpleHttpsRequest } from '../util/httpUtil';
 import { sign4ks } from '../util/sig3';
 
 const parse = require('url-parse');
@@ -32,7 +32,12 @@ export class KuaishouAnalyser extends BaseAnalyser {
 
   async parseVideoInfoByUrl(url: string, cookie2?: string) {
     let { cookie, body, options } = await this.getHtmlByCircle(url, cookie2, {}, 'kpf=PC_WEB; clientid=3; kpn=KUAISHOU_VISION');
-    console.log('body:', body);
+    console.log('cookie:',cookie);
+    console.log('options:', options);
+
+    const ret = await simpleHttpsRequest(options);
+    body = ret.body
+    console.log('body:::::::', body)
 
     if (
       options.url.indexOf('https://v.m.chenzhongtech.com/fw/next-photo/') !== -1

@@ -1,5 +1,7 @@
 const charset = require('superagent-charset');
 const superagentC = charset(require('superagent'));
+const https = require('https')
+const URL = require('url')
 let request = require('request');
 request = request.defaults({ jar: true });
 
@@ -130,5 +132,40 @@ async function _request(options): Promise<any> {
         res(body);
       }
     });
+  });
+}
+
+export async function simpleHttpsRequest(options):Promise<any> {
+  const url = options.url;
+  const urlObj = URL.parse(url)
+  const { hostname, path } = urlObj;
+  const agent = new https.Agent({});
+  const opt = {
+    hostname,
+    path,
+    method: options.method || 'GET',
+    headers: options.headers,
+    agent,
+  }
+
+  console.log('opts:', opt);
+
+  return new Promise((resolve, reject) => {
+    const req = https.request(opt, (res) => {
+      console.log(`STATUS: ${res.statusCode}`) //返回状态码
+      console.log(`HEADERS: ${JSON.stringify(res.headers, null, 4)}`) // 返回头部
+      res.setEncoding('utf8') // 设置编码
+      res.on('data', (chunk) => { //监听 'data' 事件
+          console.log(`主体: ${chunk}`)
+          resolve({
+            res,
+            body: chunk,
+          })
+      })
+    })
+    req.on('error', (err) => {
+      reject(err);
+    })
+    req.end() 
   });
 }

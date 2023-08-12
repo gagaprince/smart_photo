@@ -104,7 +104,7 @@ export abstract class BaseAnalyser implements Analyser {
       cookieMap[host] =`${cookieMap[host]||''} ${cookie}` ;
       const newCookie = this.getCookieByHost(cookieMap, newHost, commonCookie);
       console.log('newCookie:', newCookie);
-      return await this.getHtmlByCircle(location, newCookie, cookieMap, );
+      return await this.getHtmlByCircle(location, newCookie, cookieMap, commonCookie);
     }
     return { body, options, cookie };
   }

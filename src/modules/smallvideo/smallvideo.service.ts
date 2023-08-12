@@ -92,12 +92,12 @@ export class SmallvideoService {
     //   'https://v.douyin.com/FgWSXH4/',
     //   '/Users/gagaprince/Documents/临时存放随时可删/打鱼晒网/',
     // );
-    // const ret = await this.parseWithContent(
-    //   'https://v.kuaishou.com/1H4qKw 儿子在日记里写的，昨天奶奶不在家，我亲叔叔和我妈妈睡了一夜。老师阅后便说，你，你怎么能撒谎？儿子说，我亲眼看到的，你不信，我叫他来。片刻来的叔叔是幼儿园小班的一名学生。""轻饮微分子自在致青春 该作品在快手被播放过73.4万次，点击链接，打开【快手极速版】直接观看！',
-    // );
     const ret = await this.parseWithContent(
-      '4.35 vFH:/ 复制打开抖音，看看【婧婧🤍的作品】  https://v.douyin.com/iJDWQ9Tv/',
+      'https://v.kuaishou.com/1H4qKw 儿子在日记里写的，昨天奶奶不在家，我亲叔叔和我妈妈睡了一夜。老师阅后便说，你，你怎么能撒谎？儿子说，我亲眼看到的，你不信，我叫他来。片刻来的叔叔是幼儿园小班的一名学生。""轻饮微分子自在致青春 该作品在快手被播放过73.4万次，点击链接，打开【快手极速版】直接观看！',
     );
+    // const ret = await this.parseWithContent(
+    //   '4.35 vFH:/ 复制打开抖音，看看【婧婧🤍的作品】  https://v.douyin.com/iJDWQ9Tv/',
+    // );
     // return this.kuaishouAnalyser.parseVideoInfoByUrl(
     //   //   'https://v.kuaishou.com/n2n8T4',
     //   'https://v.kuaishou.com/lBkkeU',
