@@ -9,20 +9,20 @@ export class KuaishouAnalyser extends BaseAnalyser {
   config = {
     headers: {
       'User-Agent':
-        'Mozilla/5.0 (Linux; Android 8.0.0; SM-G955U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
       Cookie:
-        'did=web_fff7cc3aef8649e59880c8b11cd5bf3f; didv=1651897510000; sid=439ca006f56ff6139172ae84; Hm_lvt_86a27b7db2c5c0ae37fee4a8a35033ee=1651830692; OUTFOX_SEARCH_USER_ID_NCOO=1800814239.0575387; clientid=3; client_key=65890b29; Hm_lpvt_86a27b7db2c5c0ae37fee4a8a35033ee=1651903471',
+        '',
     },
     userCenter: {
       headers: {
         'User-Agent':
-          'Mozilla/5.0 (Linux; Android 8.0.0; SM-G955U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36',
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
         Cookie:
           'did=web_fff7cc3aef8649e59880c8b11cd5bf3f; didv=1651897510000; sid=439ca006f56ff6139172ae84; Hm_lvt_86a27b7db2c5c0ae37fee4a8a35033ee=1651830692; OUTFOX_SEARCH_USER_ID_NCOO=1800814239.0575387; clientid=3; client_key=65890b29; Hm_lpvt_86a27b7db2c5c0ae37fee4a8a35033ee=1651903471',
       },
     },
     productListUrl: 'https://c.kuaishou.com/rest/kd/feed/profile',
-    jsonDataReg: /window.pageData=(.*?)<\/script>/g,
+    jsonDataReg: /window.__APOLLO_STATE__=(.*?)<\/script>/g,
     descReg: /"caption":"(.*?)",/g,
     coverReg: /"poster":"(.*?)",/g,
     videoReg: /"srcNoMark":"(.*?)",/g,
@@ -31,7 +31,8 @@ export class KuaishouAnalyser extends BaseAnalyser {
   };
 
   async parseVideoInfoByUrl(url: string, cookie2?: string) {
-    let { cookie, body, options } = await this.getHtmlByCircle(url, cookie2);
+    let { cookie, body, options } = await this.getHtmlByCircle(url, cookie2, {}, 'kpf=PC_WEB; clientid=3; kpn=KUAISHOU_VISION');
+    console.log('body:', body);
 
     if (
       options.url.indexOf('https://v.m.chenzhongtech.com/fw/next-photo/') !== -1
@@ -41,7 +42,7 @@ export class KuaishouAnalyser extends BaseAnalyser {
         'https://v.m.chenzhongtech.com/fw/next-photo/',
         'https://c.kuaishou.com/fw/photo/',
       );
-      const ret = await this.getHtmlByCircle(oldUrl, cookie2);
+      const ret = await this.getHtmlByCircle(oldUrl, cookie2, {}, 'kpf=PC_WEB; clientid=3; kpn=KUAISHOU_VISION');
       cookie = ret.cookie;
       body = ret.body;
       options = ret.options;
@@ -58,12 +59,15 @@ export class KuaishouAnalyser extends BaseAnalyser {
         query,
       };
     }
+    
 
     try {
       const jsonData =
         this.getTextByReg(this.config.jsonDataReg, body, true) || '{}';
-
+      
+      console.log('content:', jsonData)
       const json = JSON.parse(jsonData);
+  
       const videoUrl = json['video']['srcNoMark'];
       const cover = json['video']['poster'];
       const desc = json['video']['caption'];

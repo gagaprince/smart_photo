@@ -62,7 +62,21 @@ export abstract class BaseAnalyser implements Analyser {
     return host1s[host1s.length - 2] === host2s[host2s.length - 2];
   }
 
-  async getHtmlByCircle(url, cookie2?: string) {
+  getCookieByHost(cookieMap={}, host, commonCookie='') {
+    const hosts = host.split('.');
+    const cookieKey = hosts[hosts.length - 2];
+    const cookieRet = Object.keys(cookieMap).reduce((pre, hostInMap) => {
+      const hosts = host.split('.');
+      const hostKey = hosts[hosts.length - 2];
+      if (hostKey === cookieKey) {
+        pre = `${pre} ${cookieMap[hostInMap]}`
+      }
+      return pre.trim();
+    }, '');
+    return `${cookieRet} ${commonCookie}`.trim();
+  }
+
+  async getHtmlByCircle(url, cookie2?: string, cookieMap={}, commonCookie='') {
     const { host } = parse(url);
     const params = {
       Accept:
@@ -75,19 +89,22 @@ export abstract class BaseAnalyser implements Analyser {
       params['Cookie'] = cookie2;
     }
 
+    console.log('cookie2:', cookie2)
+
     const {
       statusCode,
-      cookie,
+      cookie = '',
       location,
       body,
       options,
     } = await getHtmlWith302OneStep(url, !!cookie2, params);
-    if (statusCode == 302) {
+    if (statusCode == 302 || statusCode == 307) {
+      console.log(statusCode, ':', body, cookie, location)
       const newHost = parse(location).host;
-      if (this._compareHost(newHost, host)) {
-        return await this.getHtmlByCircle(location, cookie);
-      }
-      return await this.getHtmlByCircle(location);
+      cookieMap[host] =`${cookieMap[host]||''} ${cookie}` ;
+      const newCookie = this.getCookieByHost(cookieMap, newHost, commonCookie);
+      console.log('newCookie:', newCookie);
+      return await this.getHtmlByCircle(location, newCookie, cookieMap, );
     }
     return { body, options, cookie };
   }

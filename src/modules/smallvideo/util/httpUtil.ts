@@ -75,6 +75,7 @@ export const getHtmlWith302OneStep = async (
 
 async function _requestOneStep(options): Promise<any> {
   return new Promise((res, rej) => {
+    console.log('options:', options);
     request(options, (err, response, body) => {
       if (err) {
         rej(err);
@@ -88,7 +89,7 @@ async function _requestOneStep(options): Promise<any> {
           .map(cookieItem => cookieItem.split(' ')[0])
           .join(' ');
       }
-      if (response.statusCode == 302) {
+      if (response.statusCode == 302 || response.statusCode == 307) {
         location = response.headers['location'] || '';
         if (options.url.indexOf('//') === 0) {
           location = `https:${options.url}`;
