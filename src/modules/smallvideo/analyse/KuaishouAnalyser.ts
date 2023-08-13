@@ -1,5 +1,7 @@
 import { BaseAnalyser } from './Analyser';
 
+import { mockBody } from './mock/kuaishoumock'
+
 import { getHtmlWith302, postHtml, simpleHttpsRequest } from '../util/httpUtil';
 import { sign4ks } from '../util/sig3';
 
@@ -24,20 +26,40 @@ export class KuaishouAnalyser extends BaseAnalyser {
     productListUrl: 'https://c.kuaishou.com/rest/kd/feed/profile',
     jsonDataReg: /window.__APOLLO_STATE__=(.*?)<\/script>/g,
     descReg: /"caption":"(.*?)",/g,
-    coverReg: /"poster":"(.*?)",/g,
-    videoReg: /"srcNoMark":"(.*?)",/g,
+    coverReg: /"coverUrl":"(.*?)",/g,
+    videoReg: /"photoUrl":"(.*?)",/g,
     picsReg: /"images":\[(.*?)\],/g,
     imgCDNReg: /"imageCDN":"(.*?)"/g,
   };
 
+  _findFromObj(json, key) {
+    for(let jsonKey in json) {
+      console.log('jsonKey:',jsonKey)
+      if(jsonKey === key) {
+        return json[key];
+      }
+      // const obj = json[jsonKey];
+      // if(typeof obj === 'object') {
+      //   const ret = this._findFromObj(obj, key)
+      //   console.log('ret:', ret);
+      //   if (ret){
+      //     return ret;
+      //   }
+      // }
+    }
+  }
+
+  parseContentByKey(json, key) {
+    const ret = this._findFromObj(json, key);
+    return ret || '';
+  }
+
   async parseVideoInfoByUrl(url: string, cookie2?: string) {
     let { cookie, body, options } = await this.getHtmlByCircle(url, cookie2, {}, 'kpf=PC_WEB; clientid=3; kpn=KUAISHOU_VISION');
-    console.log('cookie:',cookie);
-    console.log('options:', options);
 
-    const ret = await simpleHttpsRequest(options);
-    body = ret.body
-    console.log('body:::::::', body)
+    // const ret = await simpleHttpsRequest(options);
+    // body = ret.body
+    // console.log('body:::::::', body)
 
     if (
       options.url.indexOf('https://v.m.chenzhongtech.com/fw/next-photo/') !== -1
@@ -64,33 +86,45 @@ export class KuaishouAnalyser extends BaseAnalyser {
         query,
       };
     }
+
+    body = mockBody;
+
+    // console.log('mockBody:::::::', body)
     
 
     try {
       const jsonData =
         this.getTextByReg(this.config.jsonDataReg, body, true) || '{}';
       
-      console.log('content:', jsonData)
-      const json = JSON.parse(jsonData);
+      // console.log('content:---------------------------------', jsonData)
+
+
+
+
+      // console.log('jsonstr:-------------------------', jsonData.split('};')[0]+'}')
+      // const json = JSON.parse(jsonData.split('};')[0]+'}');
   
-      const videoUrl = json['video']['srcNoMark'];
-      const cover = json['video']['poster'];
-      const desc = json['video']['caption'];
-      const domain = json['video']['imageCDN'];
-      const pics = (json['video']['images'] || []).map(item => {
-        return `https://${domain}${item.path}`;
-      });
-      const user = json['user']['kwaiId'] || json['user']['eId'];
+      const videoUrl = this.getTextByReg(this.config.videoReg, jsonData, true) || '';
+      const cover = this.getTextByReg(this.config.coverReg, jsonData, true) || '';
+      const desc =  this.getTextByReg(this.config.descReg, jsonData, true) || '';
+      // const domain = json['video']['imageCDN'];
+      // const pics = (json['video']['images'] || []).map(item => {
+      //   return `https://${domain}${item.path}`;
+      // });
+      // const user = this.parseContentByKey(json, 'name');
+      // console.log('videoUrl:', videoUrl)
       return {
         videoUrl,
         cover,
         desc,
         mp3Url: '',
-        pics,
+        // pics,
         type: 'kuaishou',
-        user,
+        // user,
       };
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
     return {};
   }
 

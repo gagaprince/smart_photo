@@ -89,7 +89,7 @@ export abstract class BaseAnalyser implements Analyser {
       params['Cookie'] = cookie2;
     }
 
-    console.log('cookie2:', cookie2)
+    // console.log('cookie2:', cookie2)
 
     const {
       statusCode,
@@ -99,11 +99,11 @@ export abstract class BaseAnalyser implements Analyser {
       options,
     } = await getHtmlWith302OneStep(url, !!cookie2, params);
     if (statusCode == 302 || statusCode == 307) {
-      console.log(statusCode, ':', body, cookie, location)
+      // console.log(statusCode, ':', body, cookie, location)
       const newHost = parse(location).host;
       cookieMap[host] =`${cookieMap[host]||''} ${cookie}` ;
       const newCookie = this.getCookieByHost(cookieMap, newHost, commonCookie);
-      console.log('newCookie:', newCookie);
+      // console.log('newCookie:', newCookie);
       return await this.getHtmlByCircle(location, newCookie, cookieMap, commonCookie);
     }
     return { body, options, cookie };

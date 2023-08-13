@@ -77,7 +77,7 @@ export const getHtmlWith302OneStep = async (
 
 async function _requestOneStep(options): Promise<any> {
   return new Promise((res, rej) => {
-    console.log('options:', options);
+    // console.log('options:', options);
     request(options, (err, response, body) => {
       if (err) {
         rej(err);
@@ -148,12 +148,12 @@ export async function simpleHttpsRequest(options):Promise<any> {
     agent,
   }
 
-  console.log('opts:', opt);
+  // console.log('opts:', opt);
 
   return new Promise((resolve, reject) => {
     const req = https.request(opt, (res) => {
-      console.log(`STATUS: ${res.statusCode}`) //返回状态码
-      console.log(`HEADERS: ${JSON.stringify(res.headers, null, 4)}`) // 返回头部
+      // console.log(`STATUS: ${res.statusCode}`) //返回状态码
+      // console.log(`HEADERS: ${JSON.stringify(res.headers, null, 4)}`) // 返回头部
       res.setEncoding('utf8') // 设置编码
       res.on('data', (chunk) => { //监听 'data' 事件
           console.log(`主体: ${chunk}`)
