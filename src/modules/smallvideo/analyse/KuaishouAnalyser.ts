@@ -87,7 +87,7 @@ export class KuaishouAnalyser extends BaseAnalyser {
       };
     }
 
-    body = mockBody;
+    // body = mockBody;
 
     // console.log('mockBody:::::::', body)
     
