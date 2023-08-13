@@ -59,7 +59,7 @@ export class KuaishouAnalyser extends BaseAnalyser {
 
     // const ret = await simpleHttpsRequest(options);
     // body = ret.body
-    // console.log('body:::::::', body)
+    console.log('body:::::::', body)
 
     if (
       options.url.indexOf('https://v.m.chenzhongtech.com/fw/next-photo/') !== -1
