@@ -25,11 +25,11 @@ export class DouyinAnalyser extends BaseAnalyser {
 
     try {
       const $ = this.cheerio.load(html);
-      console.log('html:::------------:::', html)
+      // console.log('html:::------------:::', html)
       const pageInfo = JSON.parse(
         decodeURIComponent($('#RENDER_DATA').html() || '{}'),
       );
-      console.log('pageInfo:::------------:::', pageInfo)
+      // console.log('pageInfo:::------------:::', pageInfo)
       const app = pageInfo['app'] || {};
       const initialState = app['initialState'] || {};
       const roomStore = initialState['roomStore'] || {};
@@ -74,13 +74,13 @@ export class DouyinAnalyser extends BaseAnalyser {
         user = args[args.length - 1];
       } else {
         const $ = this.cheerio.load(html);
-        console.log('html:::------------:::', html)
+        // console.log('html:::------------:::', html)
         const pageInfo = JSON.parse(
           decodeURIComponent($('#RENDER_DATA').html() || '{}'),
         );
         const desObj = this._findDesObj(pageInfo);
 
-        console.log('pageInfo:::------------:::', pageInfo)
+        // console.log('pageInfo:::------------:::', pageInfo)
 
         // 解析vedioUrl
         try {

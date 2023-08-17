@@ -47,6 +47,12 @@ export class SmallvideoController {
     const ret = await this.smallvideoService.parseVideoInfoByUrl('douyin', url);
     return ret;
   }
+  @HttpCode(200)
+  @Post('/douyinLive')
+  async douyinLive(@Body('url') url: string): Promise<any> {
+    const ret = await this.smallvideoService.parseStreamWithLink(url);
+    return ret;
+  }
 
   @Post('/douyinProduct')
   async douyinProductList(
