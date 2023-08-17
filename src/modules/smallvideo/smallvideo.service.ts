@@ -31,6 +31,19 @@ export class SmallvideoService {
     return '';
   }
 
+  async parseStreamWithLink(url:string = '') {
+    if (!url) {
+      return {}
+    }
+
+    console.log('抓取连接:', url);
+    if (url.indexOf('douyin') !== -1) {
+      return this.douyinAnalyser.parseStreamWithLink(url);
+    }
+
+    return {};
+  }
+
   async parseWithContent(
     content: string,
     cookie?: string,
@@ -92,8 +105,11 @@ export class SmallvideoService {
     //   'https://v.douyin.com/FgWSXH4/',
     //   '/Users/gagaprince/Documents/临时存放随时可删/打鱼晒网/',
     // );
-    const ret = await this.parseWithContent(
-      'https://v.kuaishou.com/2XzhIq 谁还用酒起子啊 找个山东媳妇儿就行了！ 该作品在快手被播放过20.9万次，点击链接，打开【快手极速版】直接观看！',
+    // const ret = await this.parseWithContent(
+    //   'https://v.kuaishou.com/2XzhIq 谁还用酒起子啊 找个山东媳妇儿就行了！ 该作品在快手被播放过20.9万次，点击链接，打开【快手极速版】直接观看！',
+    // );
+    const ret = await this.parseStreamWithLink(
+      'https://live.douyin.com/781261135645',
     );
     // const ret = await this.parseWithContent(
     //   '4.35 vFH:/ 复制打开抖音，看看【婧婧🤍的作品】  https://v.douyin.com/iJDWQ9Tv/',

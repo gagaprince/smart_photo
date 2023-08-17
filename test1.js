@@ -2,15 +2,26 @@ const http = require('http')
 const https = require('https')
 const URL = require('url')
 
-let options =  {
-	"hostname": "www.kuaishou.com",
-	"path": "/short-video/3xa3xskb3un6kqk?fid=0&cc=share_copylink&followRefer=151&shareMethod=TOKEN&docId=9&kpn=NEBULA&subBiz=BROWSE_SLIDE_PHOTO&photoId=3xa3xskb3un6kqk&shareId=17574866976995&shareToken=X5zO6nCFBMRp1x2&shareResourceType=PHOTO_OTHER&userId=3xz25abg7wpsyzy&shareType=1&et=1_a%252F2006244406382665729_sl4375bl&shareMode=APP&originShareId=17574866976995&appType=2&shareObjectId=5198279977785424635&shareUrlOpened=0&timestamp=1691817380709&utm_source=app_share&utm_medium=app_share&utm_campaign=app_share&location=app_share",
-	"method": "GET",
-	"headers": {
-		"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-		"Host": "www.kuaishou.com",
-		"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
-		"cookie": "did=web_59dba2b84a6a48f09c2cb073c73d45eb; didv=1691850565000;"
+let options =   {
+	hostname: 'www.kuaishou.com',
+	path: '/short-video/3x8j9vht8i7yzyu?fid=0&cc=share_copylink&followRefer=151&shareMethod=TOKEN&docId=9&kpn=NEBULA&subBiz=BROWSE_SLIDE_PHOTO&photoId=3x8j9vht8i7yzyu&shareId=17576085851217&shareToken=X2fCXuc1UUAO1dL&shareResourceType=PHOTO_OTHER&userId=3xhmiwbrmtbyhhm&shareType=1&et=1_i%252F2002435180316334226_sl105bl&shareMode=APP&originShareId=17576085851217&appType=2&shareObjectId=5243597449986068567&shareUrlOpened=0&timestamp=1691914769712&utm_source=app_share&utm_medium=app_share&utm_campaign=app_share&location=app_share',
+	method: 'GET',
+	headers: {
+	  Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+	  Host: 'www.kuaishou.com',
+	  'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
+	  cookie: 'did=web_bd1d6abf0bca4809b23f977db52d7c09; didv=1691917060000;',
+	  'Accept-Language': 'zh-CN,zh;q=0.9',
+	  Connection: 'keep-alive',
+	  'Sec-Fetch-Dest': 'document',
+	  'Sec-Fetch-Mode': 'navigate',
+	  'Sec-Fetch-Site': 'none',
+	  'Sec-Fetch-User': '?1',
+	  'Upgrade-Insecure-Requests': '1',
+	  'sec-ch-ua': '"Not/A)Brand";v="99", "Google Chrome";v="115", "Chromium";v="115"',
+	  'sec-ch-ua-mobile': '?0',
+	  'sec-ch-ua-platform': 'Windows',
+	  Referer: 'https://www.kuaishou.com/short-video/3x8j9vht8i7yzyu?fid=0&cc=share_copylink&followRefer=151&shareMethod=TOKEN&docId=9&kpn=NEBULA&subBiz=BROWSE_SLIDE_PHOTO&photoId=3x8j9vht8i7yzyu&shareId=17576085851217&shareToken=X2fCXuc1UUAO1dL&shareResourceType=PHOTO_OTHER&userId=3xhmiwbrmtbyhhm&shareType=1&et=1_i%252F2002435180316334226_sl105bl&shareMode=APP&originShareId=17576085851217&appType=2&shareObjectId=5243597449986068567&shareUrlOpened=0&timestamp=1691914769712&utm_source=app_share&utm_medium=app_share&utm_campaign=app_share&location=app_share'
 	}
 }
 

@@ -15,6 +15,48 @@ export class DouyinAnalyser extends BaseAnalyser {
     photoReqUrl: 'https://www.iesdouyin.com/web/api/v2/aweme/iteminfo/',
     productListUrl: 'https://www.iesdouyin.com/web/api/v2/aweme/post/',
   };
+
+  async parseStreamWithLink(url:string){
+    const headers = { ...this.config.headers };
+    headers['Referer'] = url;
+
+    const { html, options } = await getHtmlWith302(url, headers);
+    let type = 'douyin'
+
+    try {
+      const $ = this.cheerio.load(html);
+      console.log('html:::------------:::', html)
+      const pageInfo = JSON.parse(
+        decodeURIComponent($('#RENDER_DATA').html() || '{}'),
+      );
+      console.log('pageInfo:::------------:::', pageInfo)
+      const app = pageInfo['app'] || {};
+      const initialState = app['initialState'] || {};
+      const roomStore = initialState['roomStore'] || {};
+      const roomInfo = roomStore['roomInfo'] || {};
+      const room = roomInfo['room'] || {};
+      const stream_url = room['stream_url'] || {};
+      const flv_pull_url = stream_url ['flv_pull_url'] || {};
+      const hls_pull_url_map = stream_url['hls_pull_url_map'] || {};
+      const FULL_HD1 = flv_pull_url['FULL_HD1'] || ''
+
+      const owner = room['owner'] || {}
+       
+      return {
+        flvmap: flv_pull_url,
+        hlsmap: hls_pull_url_map,
+        flv:FULL_HD1,
+        type,
+        owner,
+      };
+    }catch(e){
+      console.error(e);
+    }
+
+    return {}
+    
+  }
+
   async parseVideoInfoByUrl(url: string) {
     const headers = { ...this.config.headers };
     headers['Referer'] = url;
@@ -32,10 +74,13 @@ export class DouyinAnalyser extends BaseAnalyser {
         user = args[args.length - 1];
       } else {
         const $ = this.cheerio.load(html);
+        console.log('html:::------------:::', html)
         const pageInfo = JSON.parse(
           decodeURIComponent($('#RENDER_DATA').html() || '{}'),
         );
         const desObj = this._findDesObj(pageInfo);
+
+        console.log('pageInfo:::------------:::', pageInfo)
 
         // 解析vedioUrl
         try {

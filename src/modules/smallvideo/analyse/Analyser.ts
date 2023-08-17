@@ -13,6 +13,15 @@ export interface IVideoData {
   cookie?: string;
   query?: string;
 }
+
+export interface IStreamData {
+  flvmap?: object,
+  hlsmap?: object,
+  flv?: string;
+  type?: string;
+  owner?: object;
+}
+
 export interface IProduct {
   desc?: string;
   cover?: string;
@@ -30,6 +39,7 @@ export interface IProductData {
 }
 
 export interface Analyser {
+  parseStreamWithLink: (url: string) => Promise<IStreamData>
   parseVideoInfoByUrl: (url: string, cookie?: string) => Promise<IVideoData>;
   parsePhotoInfo: (id: string) => Promise<IVideoData>;
   getProductList: (
@@ -111,6 +121,7 @@ export abstract class BaseAnalyser implements Analyser {
   constructor() {
     this.cheerio = cheerio;
   }
+  abstract parseStreamWithLink(url: string);
   abstract parseVideoInfoByUrl(url: string, cookie?: string);
   abstract parsePhotoInfo(id: string);
   abstract getProductList(

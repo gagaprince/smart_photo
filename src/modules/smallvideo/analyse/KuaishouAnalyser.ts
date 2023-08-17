@@ -8,6 +8,9 @@ import { sign4ks } from '../util/sig3';
 const parse = require('url-parse');
 
 export class KuaishouAnalyser extends BaseAnalyser {
+  async parseStreamWithLink(url: string) {
+    return {};
+  }
   config = {
     headers: {
       'User-Agent':

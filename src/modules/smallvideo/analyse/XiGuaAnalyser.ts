@@ -3,6 +3,9 @@ import { crc32 } from '../util/crcUtil';
 import { getHtml } from '../util/httpUtil';
 
 export class XiGuaAnalyser extends BaseAnalyser {
+  async parseStreamWithLink(url: string) {
+    return {};
+  }
   config = {
     headers: {
       'User-Agent':
