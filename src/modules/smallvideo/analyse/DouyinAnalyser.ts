@@ -73,22 +73,33 @@ export class DouyinAnalyser extends BaseAnalyser {
         const args = path.split('/');
         user = args[args.length - 1];
       } else {
-        const $ = this.cheerio.load(html);
-        // console.log('html:::------------:::', html)
-        const pageInfo = JSON.parse(
-          decodeURIComponent($('#RENDER_DATA').html() || '{}'),
-        );
+        console.log('options:',options);
+        const {url} = options;
+        console.log(url);
+        const lightVideoUrl = url.replace('video', 'light');
+        console.log(lightVideoUrl);
+        const ret = await getHtmlWith302(lightVideoUrl, options.headers);
+
+        const htmlNew = ret.html;
+
+        const $ = this.cheerio.load(htmlNew);
+        // console.log('htmlNew:::------------:::', htmlNew);
+        const dataContent = decodeURIComponent($('#RENDER_DATA').html() || '{}');
+        // console.log('dataContent:', dataContent);
+        const pageInfo = JSON.parse(dataContent);
+        // console.log('pageInfo:::------------:::', pageInfo)
         const desObj = this._findDesObj(pageInfo);
 
-        // console.log('pageInfo:::------------:::', pageInfo)
+
+        console.log('desObj:', JSON.stringify(desObj))
 
         // 解析vedioUrl
         try {
-          videoUrl = `https:${desObj['aweme']['detail']['video']['playAddr'][0]['src']}`;
-          desc = desObj['aweme']['detail']['desc'];
-          cover = desObj['aweme']['detail']['video']['coverUrlList'][0];
-          mp3Url = desObj['aweme']['detail']['music']['playUrl']['urlList'][0];
-          const awemeType = desObj['aweme']['detail']['awemeType'] || 0;
+          videoUrl = `https:${desObj['defaultData']['video']['playAddr'][0]['src']}`;
+          desc = desObj['defaultData']['desc'];
+          cover = desObj['defaultData']['video']['coverUrlList'][0];
+          mp3Url = desObj['defaultData']['music']['playUrl']['urlList'][0];
+          const awemeType = desObj['defaultData']['awemeType'] || 0;
           console.log(`awemeType:${awemeType}`);
           if (awemeType !== 0) {
             videoUrl = '.mp3';
@@ -155,7 +166,7 @@ export class DouyinAnalyser extends BaseAnalyser {
     const keys = Object.keys(pageInfo);
     let desObj = {};
     keys.forEach(key => {
-      if (pageInfo[key]['aweme']) {
+      if (pageInfo[key]['defaultData']) {
         desObj = pageInfo[key];
       }
     });
