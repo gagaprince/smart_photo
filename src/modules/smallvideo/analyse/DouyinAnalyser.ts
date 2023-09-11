@@ -91,7 +91,7 @@ export class DouyinAnalyser extends BaseAnalyser {
         const desObj = this._findDesObj(pageInfo);
 
 
-        console.log('desObj:', JSON.stringify(desObj))
+        // console.log('desObj:', JSON.stringify(desObj))
 
         // 解析vedioUrl
         try {
