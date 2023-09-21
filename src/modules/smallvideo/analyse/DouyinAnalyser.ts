@@ -16,22 +16,38 @@ export class DouyinAnalyser extends BaseAnalyser {
     productListUrl: 'https://www.iesdouyin.com/web/api/v2/aweme/post/',
   };
 
+  getPageInfoFromHtml(html:string):any {
+    const regex = /self.__pace_f.push\((\[1,\"a:.*?)\)/;
+    const matchResult = html.match(regex);
+    const parameter = matchResult[1];
+    if(parameter) {
+      try{
+        const ret = JSON.parse(parameter);
+        const info = ret[1] || '';
+        if(info){
+          const ret2 = JSON.parse(info.substring(2))
+          return ret2[ret2.length-1];
+        }
+      }catch(e){
+        console.error(e);
+      }
+    }
+    return {};
+  }
+
   async parseStreamWithLink(url:string){
     const headers = { ...this.config.headers };
     headers['Referer'] = url;
-
     const { html, options } = await getHtmlWith302(url, headers);
-    let type = 'douyin'
+    const type = 'douyin'
 
     try {
       const $ = this.cheerio.load(html);
-      // console.log('html:::------------:::', html)
-      const pageInfo = JSON.parse(
-        decodeURIComponent($('#RENDER_DATA').html() || '{}'),
-      );
+
+      const pageInfo = this.getPageInfoFromHtml(html)
       // console.log('pageInfo:::------------:::', pageInfo)
-      const app = pageInfo['app'] || {};
-      const initialState = app['initialState'] || {};
+      
+      const initialState = pageInfo['state'] || {};
       const roomStore = initialState['roomStore'] || {};
       const roomInfo = roomStore['roomInfo'] || {};
       const room = roomInfo['room'] || {};
@@ -64,7 +80,7 @@ export class DouyinAnalyser extends BaseAnalyser {
     // const html = await this.getHtml(url);
     const { html, options } = await getHtmlWith302(url, headers);
     let videoUrl, desc, cover, mp3Url, pics, user;
-    let type = 'douyin';
+    const type = 'douyin';
     // console.log(html);
     // console.log(options.url);
     if (options.url.indexOf('www.iesdouyin.com') === -1) {

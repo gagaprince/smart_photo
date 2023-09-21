@@ -61,7 +61,7 @@ export const getHtmlWith302 = async (
 
 export const getHtmlWith302OneStep = async (
   url: string,
-  jar: boolean = true,
+  jar = true,
   headers?: any,
 ) => {
   const options = {
