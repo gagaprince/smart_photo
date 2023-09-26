@@ -20,6 +20,9 @@ export interface IStreamData {
   flv?: string;
   type?: string;
   owner?: object;
+  roomTitle?: string;
+  roomId?: string;
+  webRoomId? : string;
 }
 
 export interface IProduct {

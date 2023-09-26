@@ -38,25 +38,27 @@ export class DouyinAnalyser extends BaseAnalyser {
   async parseStreamWithLink(url:string){
     const headers = { ...this.config.headers };
     headers['Referer'] = url;
-    const { html, options } = await getHtmlWith302(url, headers);
+    const { html } = await getHtmlWith302(url, headers);
     const type = 'douyin'
 
     try {
-      const $ = this.cheerio.load(html);
-
       const pageInfo = this.getPageInfoFromHtml(html)
       // console.log('pageInfo:::------------:::', pageInfo)
       
       const initialState = pageInfo['state'] || {};
       const roomStore = initialState['roomStore'] || {};
       const roomInfo = roomStore['roomInfo'] || {};
+      // console.log('roomInfo:', roomInfo);
       const room = roomInfo['room'] || {};
+      const roomId = roomInfo['roomId'] || '';
+      const webRoomId = roomInfo['web_rid'] || '';
+      const roomTitle = room['title'] || '';
       const stream_url = room['stream_url'] || {};
       const flv_pull_url = stream_url ['flv_pull_url'] || {};
       const hls_pull_url_map = stream_url['hls_pull_url_map'] || {};
       const FULL_HD1 = flv_pull_url['FULL_HD1'] || ''
 
-      const owner = room['owner'] || {}
+      const owner = roomInfo['anchor'] || {}
        
       return {
         flvmap: flv_pull_url,
@@ -64,6 +66,9 @@ export class DouyinAnalyser extends BaseAnalyser {
         flv:FULL_HD1,
         type,
         owner,
+        roomTitle,
+        roomId,
+        webRoomId,
       };
     }catch(e){
       console.error(e);
