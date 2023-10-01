@@ -17,7 +17,7 @@ export class DouyinAnalyser extends BaseAnalyser {
   };
 
   getPageInfoFromHtml(html:string):any {
-    const regex = /self.__pace_f.push\((\[1,\"a:.*?)\)/;
+    const regex = /self.__pace_f.push\((\[1,\"a:.*?)\)<\/sc>/;
     const matchResult = html.match(regex);
     const parameter = matchResult[1];
     if(parameter) {
