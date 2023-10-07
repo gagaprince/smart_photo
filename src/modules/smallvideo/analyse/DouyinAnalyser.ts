@@ -1,6 +1,7 @@
 import { BaseAnalyser } from './Analyser';
 import { getHtmlWith302 } from '../util/httpUtil';
 import { generateSignature } from '../util/sign';
+import { title } from 'process';
 export class DouyinAnalyser extends BaseAnalyser {
   config = {
     headers: {
@@ -17,6 +18,7 @@ export class DouyinAnalyser extends BaseAnalyser {
   };
 
   getPageInfoFromHtml(html:string):any {
+    // console.log('html:',html);
     const regex = /self.__pace_f.push\((\[1,\"a:.*?)\)<\/sc/;
     const matchResult = html.match(regex);
     const parameter = matchResult[1];
@@ -36,13 +38,27 @@ export class DouyinAnalyser extends BaseAnalyser {
   }
 
   async parseStreamWithLink(url:string){
-    const headers = { ...this.config.headers };
+    const headers = { 
+      'User-Agent': this.config.headers['User-Agent'],
+      'Accept': this.config.headers['Accept'],
+      'Cookie': '',
+     };
     headers['Referer'] = url;
-    const { html } = await getHtmlWith302(url, headers);
+    let contentHtml = '';
+    const { html, options } = await getHtmlWith302(url, headers);
+    const $ = this.cheerio.load(html);
+    const hasTitle = $('title').length;
+    if(!html || !hasTitle){
+      const ret = await getHtmlWith302(url, options.headers);
+      contentHtml = ret.html;
+    }else{
+      contentHtml = html;
+      console.log('contentHtml:', contentHtml);
+    }
     const type = 'douyin'
 
     try {
-      const pageInfo = this.getPageInfoFromHtml(html)
+      const pageInfo = this.getPageInfoFromHtml(contentHtml)
       // console.log('pageInfo:::------------:::', pageInfo)
       
       const initialState = pageInfo['state'] || {};
