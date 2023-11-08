@@ -9,7 +9,7 @@ export class DouyinAnalyser extends BaseAnalyser {
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36',
       // 'Cookie': 'douyin.com; ttwid=1%7CZC51m3uiHpYVPLqj8vPeufcz_PiejZKR7jMTF_XyzrQ%7C1650876644%7C84870b9c10d2a167cd6302674e062fc402b134abc4e5200f1909519c6d129b0a; _tea_utm_cache_6383=undefined; passport_csrf_token=c045d950791b3382a570b57738ab00f2; passport_csrf_token_default=c045d950791b3382a570b57738ab00f2; _tea_utm_cache_1300=undefined; AVATAR_LOGIN_GUIDE_COUNT=1; s_v_web_id=verify_l2ehbzod_PsgmsGvc_TvFs_4Z66_97s1_ZHzu0G2zkRGn; _tea_utm_cache_2285=undefined; ttcid=0866bc9d76734c74a3b3dea0b3be831742; THEME_STAY_TIME=299509; IS_HIDE_THEME_CHANGE=1; pwa_guide_count=3; __ac_nonce=062676518008cbcde146e; __ac_signature=_02B4Z6wo00f01UaGSMgAAIDC0lATxdI13q1GpkxAADPK7J22PnprD.6lUhsV.QQxv4r0e6pD2LCw1kHwAL9OwqJCIgqUogBK9Dl1IT1HHai6UgfV2blxfj8aq6VGJFoOt-wlOZ.U3o.EO4XC29; strategyABtestKey=1650943258.382; AB_LOGIN_GUIDE_TIMESTAMP=1650943258235; msToken=GtvIj3spx_xiK4LxAo-suvAZxWQRaVOgQWbh004Cd6PvVThL_DDmZ5gyYJ1-tBioypi9zf5AWTOFKe2iBKKLpi8FWieDm-SrAHNoUoX7Ah-lTA_zodoh78r0Mp6lMswM; tt_scid=Mpt0f6bgv4ptwI5BGWTNNpe8dH3pNwVwK0bz62wtpYBsxvjQTG7XYfjge5Tkpq4g88b5; home_can_add_dy_2_desktop=1; msToken=IHpkvmWpLZ7FomcURbps_VBwvYLiT_pNXdruyGssNeRuaSTIc_vpsCPYqqc24L-tIqa-qRYxMHqX84YgmiczAHJGzn1heOHnPJQNX-2vJPGaWxXzH8c0UDQebRAH3mxo',
       Cookie:
-        'douyin.com; ttwid=1%7CZC51m3uiHpYVPLqj8vPeufcz_PiejZKR7jMTF_XyzrQ%7C1650876644%7C84870b9c10d2a167cd6302674e062fc402b134abc4e5200f1909519c6d129b0a; _tea_utm_cache_6383=undefined; passport_csrf_token=c045d950791b3382a570b57738ab00f2; passport_csrf_token_default=c045d950791b3382a570b57738ab00f2; _tea_utm_cache_1300=undefined; AVATAR_LOGIN_GUIDE_COUNT=1; s_v_web_id=verify_l2ehbzod_PsgmsGvc_TvFs_4Z66_97s1_ZHzu0G2zkRGn; _tea_utm_cache_2285=undefined; ttcid=0866bc9d76734c74a3b3dea0b3be831742; THEME_STAY_TIME=299509; IS_HIDE_THEME_CHANGE=1; pwa_guide_count=3; __ac_nonce=062676518008cbcde146e; __ac_signature=_02B4Z6wo00f01UaGSMgAAIDC0lATxdI13q1GpkxAADPK7J22PnprD.6lUhsV.QQxv4r0e6pD2LCw1kHwAL9OwqJCIgqUogBK9Dl1IT1HHai6UgfV2blxfj8aq6VGJFoOt-wlOZ.U3o.EO4XC29; strategyABtestKey=1650943258.382; AB_LOGIN_GUIDE_TIMESTAMP=1650943258235; msToken=GtvIj3spx_xiK4LxAo-suvAZxWQRaVOgQWbh004Cd6PvVThL_DDmZ5gyYJ1-tBioypi9zf5AWTOFKe2iBKKLpi8FWieDm-SrAHNoUoX7Ah-lTA_zodoh78r0Mp6lMswM; tt_scid=Mpt0f6bgv4ptwI5BGWTNNpe8dH3pNwVwK0bz62wtpYBsxvjQTG7XYfjge5Tkpq4g88b5; home_can_add_dy_2_desktop=1; msToken=IHpkvmWpLZ7FomcURbps_VBwvYLiT_pNXdruyGssNeRuaSTIc_vpsCPYqqc24L-tIqa-qRYxMHqX84YgmiczAHJGzn1heOHnPJQNX-2vJPGaWxXzH8c0UDQebRAH3mxo',
+        'douyin.com; device_web_cpu_core=12; device_web_memory_size=8; architecture=amd64; _wafchallengeid=eyJ2Ijp7ImEiOiJxb1h0dWFXbkt4SGxlcnlnVGEyL1dEM2pGNndJWEFSWE15Q2JpakdhenVNPSIsImIiOjE2OTk0NTE3MjksImMiOiIvZG9oKzZyVnNuSGJ1Y2dKUGwyeDR2UWVXVktwY1RlcWRWRlMxUjZDNjBRPSJ9LCJzIjoiVVgwbkkyTWRvWlZTV2dGbVp0OFVHTzhqcklhT21KdmhyQ1doa3gzclRLdz0iLCJkIjoiTVE9PSJ9; __ac_nonce=0654b901b009aab36b805; __ac_signature=_02B4Z6wo00f01bkzKlAAAIDA2jnqOrUg4.W5Ey7AAAsIgFL6-83p-dJI8973sJQQ6W.ppDx9cf.CcSXCgjv9ikgGZKKEIe64Usmvl23dzE6cfU3JqH3zlBA-vzMyUYd4.96hXiF2RVPYNE3869; s_v_web_id=verify_lopt6yb5_16tz0nbt_0Fsg_41hK_Axkt_gVW4OWLCHoCk; csrf_session_id=36293f4073ff61b0352e6fca70e20944; bd_ticket_guard_client_data=eyJiZC10aWNrZXQtZ3VhcmQtdmVyc2lvbiI6MiwiYmQtdGlja2V0LWd1YXJkLWl0ZXJhdGlvbi12ZXJzaW9uIjoxLCJiZC10aWNrZXQtZ3VhcmQtcmVlLXB1YmxpYy1rZXkiOiJCSWFNWW9jTHdwaTNBU1RUUDYvUWk5T21FbjdIRWNPRyt6WldtSlpJVlJQb2pjMnJrcDgzZEI3dXkzNFVCRlBCM3Fqc3dmWjlaTTVDN1FIWlRWT3NCYk09IiwiYmQtdGlja2V0LWd1YXJkLXdlYi12ZXJzaW9uIjoxfQ%3D%3D; tt_scid=if1CKSgPqZIp7G0xBHuZAVdaPawcp0QglXLsqYetnZwEl3fnEx4IY8QtrC2RSOpO860a; msToken=IOrVxj8CTPjsT-A-ZKUIsB1RUaFjEgvJ89iiYwKuM3PYfrDmOq0CnBrZGlD31tARXfV5nUsr530zZruJeqQzgb7MxROeH7Pj7qM1urRy5Q3yUILxNVES4wfBG1ggtK8=; IsDouyinActive=false; webcast_local_quality=null',
       Accept:
         'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     },
@@ -107,7 +107,7 @@ export class DouyinAnalyser extends BaseAnalyser {
     const { html, options } = await getHtmlWith302(url, headers);
     let videoUrl, desc, cover, mp3Url, pics, user;
     const type = 'douyin';
-    console.log(html);
+    // console.log(html);
     // console.log(options.url);
     if (options.url.indexOf('www.iesdouyin.com') === -1) {
       if (/www.douyin.com\/user/g.test(options.url)) {
@@ -125,11 +125,11 @@ export class DouyinAnalyser extends BaseAnalyser {
         const htmlNew = ret.html;
 
         const $ = this.cheerio.load(htmlNew);
-        console.log('htmlNew:::------------:::', htmlNew);
+        // console.log('htmlNew:::------------:::', htmlNew);
         const dataContent = decodeURIComponent($('#RENDER_DATA').html() || '{}');
-        console.log('dataContent:', dataContent);
+        // console.log('dataContent:', dataContent);
         const pageInfo = JSON.parse(dataContent);
-        console.log('pageInfo:::------------:::', pageInfo)
+        // console.log('pageInfo:::------------:::', pageInfo)
         const desObj = this._findDesObj(pageInfo);
 
 
