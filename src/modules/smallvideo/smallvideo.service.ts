@@ -108,12 +108,12 @@ export class SmallvideoService {
     // const ret = await this.parseWithContent(
     //   'https://v.kuaishou.com/2XzhIq 谁还用酒起子啊 找个山东媳妇儿就行了！ 该作品在快手被播放过20.9万次，点击链接，打开【快手极速版】直接观看！',
     // );
-    const ret = await this.parseStreamWithLink(
-      'https://live.douyin.com/781261135645',
-    );
-    // const ret = await this.parseWithContent(
-    //   '4.35 vFH:/ 复制打开抖音，看看【婧婧🤍的作品】  https://v.douyin.com/iJDWQ9Tv/',
+    // const ret = await this.parseStreamWithLink(
+    //   'https://live.douyin.com/55208227044',
     // );
+    const ret = await this.parseWithContent(
+      '7.48 复制打开抖音，看看【颜值 可能有关】# 御姐 把你列表的猥琐男，艾特出来# 御姐  https://v.douyin.com/iR2GxvXJ/ rEU:/ r@e.oD 08/14 ',
+    );
     // return this.kuaishouAnalyser.parseVideoInfoByUrl(
     //   //   'https://v.kuaishou.com/n2n8T4',
     //   'https://v.kuaishou.com/lBkkeU',

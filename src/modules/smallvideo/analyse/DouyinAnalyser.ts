@@ -19,8 +19,13 @@ export class DouyinAnalyser extends BaseAnalyser {
 
   getPageInfoFromHtml(html:string):any {
     // console.log('html:',html);
-    const regex = /self.__pace_f.push\((\[1,\"a:.*?)\)<\/sc/;
-    const matchResult = html.match(regex);
+    let regex = /self.__pace_f.push\((\[1,\"[a|9|b]:.*?)\)<\/sc/;
+    let matchResult = html.match(regex);
+    if(!matchResult){
+      regex = /self.__pace_f.push\((\[1,\"9:.*?)\)<\/sc/;
+      matchResult = html.match(regex);
+    }
+    
     const parameter = matchResult[1];
     if(parameter) {
       try{
@@ -102,7 +107,7 @@ export class DouyinAnalyser extends BaseAnalyser {
     const { html, options } = await getHtmlWith302(url, headers);
     let videoUrl, desc, cover, mp3Url, pics, user;
     const type = 'douyin';
-    // console.log(html);
+    console.log(html);
     // console.log(options.url);
     if (options.url.indexOf('www.iesdouyin.com') === -1) {
       if (/www.douyin.com\/user/g.test(options.url)) {
@@ -120,11 +125,11 @@ export class DouyinAnalyser extends BaseAnalyser {
         const htmlNew = ret.html;
 
         const $ = this.cheerio.load(htmlNew);
-        // console.log('htmlNew:::------------:::', htmlNew);
+        console.log('htmlNew:::------------:::', htmlNew);
         const dataContent = decodeURIComponent($('#RENDER_DATA').html() || '{}');
-        // console.log('dataContent:', dataContent);
+        console.log('dataContent:', dataContent);
         const pageInfo = JSON.parse(dataContent);
-        // console.log('pageInfo:::------------:::', pageInfo)
+        console.log('pageInfo:::------------:::', pageInfo)
         const desObj = this._findDesObj(pageInfo);
 
 
