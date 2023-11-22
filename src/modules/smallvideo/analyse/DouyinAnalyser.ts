@@ -20,10 +20,11 @@ export class DouyinAnalyser extends BaseAnalyser {
   getPageInfoFromHtml(html:string):any {
     // console.log('html:',html);
     // let regex = /self.__pace_f.push\((\[1,\"[a|9|b]:.*?)\)<\/sc/;
-    const regex = /self.__pace_f.push\((\[1,\"[a-z|0-9]:.*?roomInfo\\":\{\\"room\\".*?)\)<\/sc/;
+    const regex = /self.__pace_f.push\((\[1,\"[a-z|0-9]:(?!.*self.__pace_f.push.*).*?roomInfo\\":\{\\"room\\".*?)\)<\/sc/;
     const matchResult = html.match(regex);
     
     const parameter = matchResult[1];
+    // console.log('parameter: ',parameter)
     if(parameter) {
       try{
         const ret = JSON.parse(parameter);
