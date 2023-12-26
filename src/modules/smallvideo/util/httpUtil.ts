@@ -53,7 +53,7 @@ export const getHtmlWith302 = async (
     headers,
     followRedirect: false,
   };
-  console.log('options',options);
+  // console.log('options',options);
   const ret = await _request(options);
   // console.log('ret:',ret)
 
@@ -130,6 +130,12 @@ async function _request(options): Promise<any> {
         options.headers['Referer'] = options.url;
         res(_request(options));
       } else {
+        const cookie = response.headers['set-cookie'];
+        if (cookie) {
+          options.headers.Cookie = options.headers.Cookie
+            ? `${options.headers.Cookie} ${cookie}`
+            : cookie;
+        }
         res(body);
       }
     });
