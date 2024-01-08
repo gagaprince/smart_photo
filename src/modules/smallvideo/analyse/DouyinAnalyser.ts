@@ -48,7 +48,10 @@ export class DouyinAnalyser extends BaseAnalyser {
      };
     headers['Referer'] = url;
     let contentHtml = '';
-    const { html, options } = await getHtmlWith302(url, headers);
+    const domainUrl = 'https://live.douyin.com/'
+    const preReqRet = await getHtmlWith302(domainUrl, headers);
+    const { html, options } = await getHtmlWith302(url, preReqRet.options.headers);
+    
     const $ = this.cheerio.load(html);
     const hasTitle = $('title').length;
     if(!html || !hasTitle){
