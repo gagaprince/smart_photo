@@ -4,8 +4,8 @@ import { config4All } from './config';
 import { changeMd5 } from './util/mp4Util';
 import { Analyser, IVideoData } from './analyse/Analyser';
 import { DouyinAnalyser } from './analyse/DouyinAnalyser';
+import { DouyinAnalyserV2 } from './analyse/DouyinAnalyserV2';
 import { KuaishouAnalyser } from './analyse/KuaishouAnalyser';
-import { crc32 } from './util/crcUtil';
 import { XiGuaAnalyser } from './analyse/XiGuaAnalyser';
 const download = require('download');
 const path = require('path');
@@ -15,10 +15,12 @@ const fse = require('fs-extra');
 @Injectable()
 export class SmallvideoService {
   douyinAnalyser: Analyser;
+  douyinAnalyserV2: Analyser;
   kuaishouAnalyser: Analyser;
   xiguaAnalyser: Analyser;
   constructor() {
     this.douyinAnalyser = new DouyinAnalyser();
+    this.douyinAnalyserV2 = new DouyinAnalyserV2();
     this.kuaishouAnalyser = new KuaishouAnalyser();
     this.xiguaAnalyser = new XiGuaAnalyser();
   }
@@ -52,7 +54,7 @@ export class SmallvideoService {
     if (realLink) {
       console.log(realLink);
       if (realLink.indexOf('douyin') !== -1) {
-        return this.douyinAnalyser.parseVideoInfoByUrl(realLink, cookie);
+        return this.douyinAnalyserV2.parseVideoInfoByUrl(realLink, cookie);
       } else if (realLink.indexOf('kuaishou') !== -1) {
         return this.kuaishouAnalyser.parseVideoInfoByUrl(realLink, cookie);
       } else if (realLink.indexOf('ixigua') !== -1) {
@@ -105,12 +107,12 @@ export class SmallvideoService {
     //   'https://v.douyin.com/FgWSXH4/',
     //   '/Users/gagaprince/Documents/临时存放随时可删/打鱼晒网/',
     // );
-    // const ret = await this.parseWithContent(
-    //   'https://v.kuaishou.com/2XzhIq 谁还用酒起子啊 找个山东媳妇儿就行了！ 该作品在快手被播放过20.9万次，点击链接，打开【快手极速版】直接观看！',
-    // );
-    const ret = await this.parseStreamWithLink(
-      'https://live.douyin.com/861883963819',
+    const ret = await this.parseWithContent(
+      '8.79 T@l.cN 10/23 odn:/ 复制打开抖音，看看【芝芝可可的作品】姐姐不行吗# 御姐  https://v.douyin.com/iLRxdSAR/',
     );
+    // const ret = await this.parseStreamWithLink(
+    //   'https://live.douyin.com/861883963819',
+    // );
     // const ret = await this.parseWithContent(
     //   '7.48 复制打开抖音，看看【颜值 可能有关】# 御姐 把你列表的猥琐男，艾特出来# 御姐  https://v.douyin.com/iR2GxvXJ/ rEU:/ r@e.oD 08/14 ',
     // );
