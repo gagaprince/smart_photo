@@ -10,12 +10,6 @@ export class SmallvideoController {
     return ret;
   }
 
-  @Get('/test1')
-  async test1(@Query() query: any): Promise<any> {
-    const ret = await this.smallvideoService.test();
-    return ret;
-  }
-
   @HttpCode(200)
   @Post('/all')
   async all(
@@ -93,15 +87,15 @@ export class SmallvideoController {
     return ret;
   }
 
-  // @HttpCode(200)
-  // @Post('/dyABogus')
-  // async dyABogus(
-  //   @Body('url') url: string,
-  //   @Body('ua') ua: string,
-  // ) {
-  //   const ret = await this.smallvideoService.dyABogus(url, ua);
-  //   return ret;
-  // }
+  @HttpCode(200)
+  @Post('/dyABogus')
+  async dyABogus(
+    @Body('url') url: string,
+    @Body('ua') ua: string,
+  ) {
+    const ret = await this.smallvideoService.dyABogus(url, ua);
+    return ret;
+  }
 
   @Get('/test')
   async test(@Query() query: any): Promise<any> {

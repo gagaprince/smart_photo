@@ -11,7 +11,7 @@ const download = require('download');
 const path = require('path');
 const fs = require('fs');
 const fse = require('fs-extra');
-const dySignNew = require('./util/aBogus');
+const dySignNew = require('./util/aBogus').dySignNew;
 
 @Injectable()
 export class SmallvideoService {
