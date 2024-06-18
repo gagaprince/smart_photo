@@ -11,6 +11,7 @@ const download = require('download');
 const path = require('path');
 const fs = require('fs');
 const fse = require('fs-extra');
+const dySignNew = require('./util/aBogus');
 
 @Injectable()
 export class SmallvideoService {
@@ -314,5 +315,9 @@ export class SmallvideoService {
       this.douyinDownloadByUser(user, filePath);
     }
     return '';
+  }
+
+  async dyABogus(url: string, ua: string):Promise<any> {
+    return dySignNew(url, ua);
   }
 }
